@@ -1,0 +1,32 @@
+module.exports = app => {
+
+  const attorneys = require("../controllers/attorneys.controller.js");
+
+  var router = require("express").Router();
+
+  // Create a new attorney
+  router.post("/", attorneys.create);
+
+  // Retrieve all attorneys
+  router.get("/", attorneys.findAll);
+
+  // Retrieve all plaintiff attorneys
+  router.get("/plaintiff", attorneys.findAllPlaintiff);
+
+  // Retrieve all defense attorneys
+  router.get("/defense", attorneys.findAllDefense);
+
+  // Retrieve a single attorney with id
+  router.get("/:id", attorneys.findOne);
+
+  // Update an attorney with id
+  router.put("/:id", attorneys.update);
+
+  // Delete an attorney with id
+  router.delete("/:id", attorneys.delete);
+
+  // Delete all attorneys
+  // router.delete("/", attorneys.deleteAll);
+
+  app.use('/api/attorneys', router);
+};
