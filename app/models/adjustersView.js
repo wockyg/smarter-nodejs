@@ -109,7 +109,7 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     sequelize,
     doNotSync: true,
-    tableName: 'adjustersView',
+    // tableName: 'adjustersView',
     timestamps: false,
   });
 };
