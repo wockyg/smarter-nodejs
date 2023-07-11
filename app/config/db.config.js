@@ -1,6 +1,6 @@
 module.exports = {
   HOST: "209.182.208.106",
-  USER: "define20_admin",
+  USER: "admin",
   PASSWORD: "X^yCpeZO]3Dk",
   DB: "define20_smarter2",
   dialect: "mysql",
