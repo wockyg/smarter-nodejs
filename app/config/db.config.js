@@ -1,5 +1,5 @@
 module.exports = {
-  HOST: "127.0.0.1",
+  HOST: "209.182.208.106",
   USER: "define20_admin",
   PASSWORD: "X^yCpeZO]3Dk",
   DB: "define20_smarter2",
