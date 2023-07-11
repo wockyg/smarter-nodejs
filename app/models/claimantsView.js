@@ -87,7 +87,7 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     sequelize,
     doNotSync: true,
-    tableName: 'claimantsView',
+    tableName: 'claimantsview',
     timestamps: false,
   });
 };

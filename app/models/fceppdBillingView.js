@@ -165,7 +165,7 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     sequelize,
     doNotSync: true,
-    tableName: 'fceppdBillingView',
+    tableName: 'fceppdBillingview',
     timestamps: false,
   });
 };

@@ -337,7 +337,7 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     sequelize,
     doNotSync: true,
-    tableName: 'dptBillingVisitsView',
+    tableName: 'dptBillingVisitsview',
     timestamps: false,
   });
 };
