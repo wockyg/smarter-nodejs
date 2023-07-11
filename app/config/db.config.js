@@ -1,5 +1,5 @@
 module.exports = {
-  HOST: "209.182.208.106",
+  HOST: "definedpt.com",
   PORT: "3306",
   USER: "define20_admin",
   PASSWORD: "",
