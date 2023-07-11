@@ -659,7 +659,7 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     sequelize,
     doNotSync: true,
-    tableName: 'referralsView',
+    tableName: 'referralsview',
     timestamps: false,
   });
 };
