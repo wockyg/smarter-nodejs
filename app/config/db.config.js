@@ -1,5 +1,5 @@
 module.exports = {
-  HOST: "definedpt.com",
+  HOST: "ec2-52-41-36-82.us-west-2.compute.amazonaws.com",
   PORT: "3306",
   USER: "define20_admin",
   PASSWORD: "0SP]UY4*}]pG",
