@@ -1,8 +1,8 @@
 module.exports = {
   HOST: "127.0.0.1",
-  USER: "root",
-  PASSWORD: "12345678",
-  DB: "smarter2",
+  USER: "define20_admin",
+  PASSWORD: "X^yCpeZO]3Dk",
+  DB: "define20_smarter2",
   dialect: "mysql",
   timezone: "-04:00",
   pool: {
