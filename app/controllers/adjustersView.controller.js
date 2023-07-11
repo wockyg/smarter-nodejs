@@ -15,7 +15,7 @@ exports.findAll = (req, res) => {
         .catch(err => {
         res.status(500).send({
             message:
-            "Some error occurred while retrieving adjusters."
+            err.message || "Some error occurred while retrieving adjusters."
         });
         });
   
