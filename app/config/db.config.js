@@ -2,7 +2,7 @@ module.exports = {
   HOST: "definedpt.com",
   PORT: "3306",
   USER: "define20_admin",
-  PASSWORD: "",
+  PASSWORD: "0SP]UY4*}]pG",
   DB: "define20_smarter2",
   dialect: "mysql",
   timezone: "-04:00",
