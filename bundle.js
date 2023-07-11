@@ -14,7 +14,7 @@ db.referralNotes;
 const app = express();
 
 var corsOptions = {
-  origin: "http://localhost:3000"
+  origin: "*"
 };
 
 app.use(cors(corsOptions));
@@ -56,6 +56,8 @@ require("./app/routes/dptBillingVisitsView.routes")(app);
 require("./app/routes/fceppdBillingView.routes")(app);
 
 require("./app/routes/lookup_UsState.routes")(app);
+
+// const path = 'http://localhost:3000';
 
 // D_CCWorkedFUEmail Task (6:00AM) (0 6 * * *)
 // schedule.scheduleJob('0 6 * * *', function(){
