@@ -5,9 +5,9 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "rollup -c -w",
-    "build": "NODE_ENV=production rollup -c",
-    "dev": "rollup -c -w"
+    "start": "node bundle.js",
+    "build": "NODE_ENV=production /Users/warren/Documents/react-projects/smarter/smarter-nodejs/node_modules/rollup/dist/bin/rollup -c",
+    "dev": "/Users/warren/Documents/react-projects/smarter/smarter-nodejs/node_modules/rollup/dist/bin/rollup -c -w"
   },
   "author": "Warren McClure",
   "license": "ISC",
@@ -21,6 +21,9 @@
     "sequelize-auto": "^0.8.8"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.2",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.1.0",
     "@rollup/plugin-run": "^3.0.1",
     "rollup": "^3.23.0"
   }
