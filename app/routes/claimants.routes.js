@@ -7,11 +7,11 @@ module.exports = app => {
   // Create a new claimant
   router.post("/", claimants.create);
 
-  // Retrieve all claimants
-  router.get("/", claimants.findAll);
-
   // Retrieve a single claimant with id
   router.get("/:id", claimants.findOne);
+
+  // Retrieve all claimants
+  router.get("/", claimants.findAll);
 
   // Update an claimant with id
   router.put("/:id", claimants.update);

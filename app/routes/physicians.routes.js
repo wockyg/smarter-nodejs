@@ -7,11 +7,11 @@ module.exports = app => {
   // Create a new physician
   router.post("/", physicians.create);
 
-  // Retrieve all physicians
-  router.get("/", physicians.findAll);
-
   // Retrieve a single physician with id
   router.get("/:id", physicians.findOne);
+
+  // Retrieve all physicians
+  router.get("/", physicians.findAll);
 
   // Update an physician with id
   router.put("/:id", physicians.update);

@@ -7,9 +7,6 @@ module.exports = app => {
   // Create a new attorney
   router.post("/", attorneys.create);
 
-  // Retrieve all attorneys
-  router.get("/", attorneys.findAll);
-
   // Retrieve all plaintiff attorneys
   router.get("/plaintiff", attorneys.findAllPlaintiff);
 
@@ -18,6 +15,9 @@ module.exports = app => {
 
   // Retrieve a single attorney with id
   router.get("/:id", attorneys.findOne);
+
+  // Retrieve all attorneys
+  router.get("/", attorneys.findAll);
 
   // Update an attorney with id
   router.put("/:id", attorneys.update);

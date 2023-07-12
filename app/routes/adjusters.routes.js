@@ -7,14 +7,14 @@ module.exports = app => {
   // Create a new adjuster
   router.post("/", adjusters.create);
 
-  // Retrieve all adjusters
-  router.get("/", adjusters.findAll);
-
   // Retrieve all active adjusters
   router.get("/active", adjusters.findAllActive);
 
   // Retrieve a single adjuster with id
   router.get("/:id", adjusters.findOne);
+
+  // Retrieve all adjusters
+  router.get("/", adjusters.findAll);
 
   // Update an adjuster with id
   router.put("/:id", adjusters.update);

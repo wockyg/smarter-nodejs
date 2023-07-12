@@ -7,11 +7,11 @@ module.exports = app => {
   // Create a new employer
   router.post("/", employers.create);
 
-  // Retrieve all employers
-  router.get("/", employers.findAll);
-
   // Retrieve a single employer with id
   router.get("/:id", employers.findOne);
+
+  // Retrieve all employers
+  router.get("/", employers.findAll);
 
   // Update an employer with id
   router.put("/:id", employers.update);

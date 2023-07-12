@@ -7,14 +7,14 @@ module.exports = app => {
   // Create a new casemanager
   router.post("/", casemanagers.create);
 
-  // Retrieve all casemanagers
-  router.get("/", casemanagers.findAll);
-
   // Retrieve all active casemanagers
   router.get("/active", casemanagers.findAllActive);
 
   // Retrieve a single casemanager with id
   router.get("/:id", casemanagers.findOne);
+
+  // Retrieve all casemanagers
+  router.get("/", casemanagers.findAll);
 
   // Update an casemanager with id
   router.put("/:id", casemanagers.update);

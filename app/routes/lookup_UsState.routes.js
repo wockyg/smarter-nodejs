@@ -4,11 +4,11 @@ module.exports = app => {
 
   var router = require("express").Router();
 
-  // Retrieve all US states
-  router.get("/", states.findAll);
-
   // Retrieve a single US state with id
   router.get("/:id", states.findOne);
+
+  // Retrieve all US states
+  router.get("/", states.findAll);
 
   // Update a US state with id
   router.put("/:id", states.update);
