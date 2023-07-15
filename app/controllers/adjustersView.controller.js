@@ -55,3 +55,30 @@ exports.findAllActive = (req, res) => {
       });
     });
 };
+
+// Retrieve all adjusters from the database (minified for dropdown/autocomplete field list).
+exports.findAllDropDown = (req, res) => {
+    AdjusterView.findAll({
+        attributes: [
+            'adjusterId', 
+            'firstName',
+            'lastName',
+            'clientId'
+        ],
+        where: {
+            status: {
+                [Op.ne]: 'Inactive'
+            }
+        }
+    })
+        .then(data => {
+        res.send(data);
+        })
+        .catch(err => {
+        res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving adjusters."
+        });
+        });
+  
+};

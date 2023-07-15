@@ -7,6 +7,9 @@ module.exports = app => {
   // Retrieve all active adjusters
   router.get("/active", adjustersView.findAllActive);
 
+  // Retrieve all active adjusters
+  router.get("/dropdown", adjustersView.findAllDropDown);
+
   // Retrieve a single adjuster with id
   router.get("/:id", adjustersView.findOne);
 
