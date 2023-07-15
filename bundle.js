@@ -14,7 +14,7 @@ db.referralNotes;
 const app = express();
 
 var corsOptions = {
-  origin: "smarter-8ko2cm2pe-wockyg.vercel.app"
+  origin: "https://smarter-one.vercel.app/"
 };
 
 app.use(cors(corsOptions));
