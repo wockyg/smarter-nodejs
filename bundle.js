@@ -14,7 +14,7 @@ db.referralNotes;
 const app = express();
 
 var corsOptions = {
-  origin: "smarter-6u9yij9it-wockyg.vercel.app"
+  origin: "smarter-8ko2cm2pe-wockyg.vercel.app"
 };
 
 app.use(cors(corsOptions));
