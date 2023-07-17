@@ -51,15 +51,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(50),
       allowNull: true
     },
-    ptStatusPrev: {
-      type: DataTypes.STRING(50),
-      allowNull: true
-    },
     fuHoldNotes: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    fuHoldNotesPrev: {
       type: DataTypes.STRING(100),
       allowNull: true
     },
@@ -496,10 +488,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATEONLY,
       allowNull: true
     },
-    rescheduleDOSPrev: {
-      type: DataTypes.DATEONLY,
-      allowNull: true
-    },
     rescheduleTime: {
       type: DataTypes.STRING(50),
       allowNull: true
@@ -609,10 +597,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     confirmAttend: {
-      type: DataTypes.STRING(50),
-      allowNull: true
-    },
-    confirmAttendPrev: {
       type: DataTypes.STRING(50),
       allowNull: true
     },
