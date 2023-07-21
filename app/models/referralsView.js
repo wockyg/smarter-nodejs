@@ -608,6 +608,13 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATEONLY,
       allowNull: true
     },
+    fceApprovedFormat: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        const d = this.fceApproved ? new Date(this.fceApproved) : null;
+        return this.fceApproved ? `${d.getUTCMonth()+1}/${d.getUTCDate()}/${d.getUTCFullYear()}` : null;
+      }
+    },
     invoiceRequested: {
       type: DataTypes.DATEONLY,
       allowNull: true
