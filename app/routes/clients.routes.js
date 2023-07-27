@@ -7,6 +7,12 @@ module.exports = app => {
   // Create a new client
   router.post("/", clients.create);
 
+  // Retrieve all clients dropdown
+  router.get("/dropdown", clients.findAllDropDown);
+
+  // Retrieve all clients searchall
+  router.get("/searchall", clients.findAllSearchAll);
+
   // Retrieve a single client with id
   router.get("/:id", clients.findOne);
 

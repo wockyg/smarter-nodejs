@@ -65,6 +65,53 @@ exports.findAll = (req, res) => {
   
 };
 
+// Retrieve all physicians (minified for dropdown/autocomplete field list).
+exports.findAllDropDown = (req, res) => {
+    Physician.findAll({
+        attributes: [
+            'physicianId', 
+            'firstName',
+            'lastName',
+            'facility'
+        ]
+    })
+        .then(data => {
+        res.send(data);
+        })
+        .catch(err => {
+        res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving physicians dropdown."
+        });
+        });
+  
+};
+
+// Retrieve all physicians (minified for search table).
+exports.findAllSearchAll = (req, res) => {
+    Physician.findAll({
+        attributes: [
+            'physicianId', 
+            'firstName',
+            'lastName',
+            'facility',
+            'phone',
+            'fax',
+            'email'
+        ]
+    })
+        .then(data => {
+        res.send(data);
+        })
+        .catch(err => {
+        res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving physicians searchall."
+        });
+        });
+  
+};
+
 // Find a single physician with an id
 exports.findOne = (req, res) => {
     const id = req.params.id;

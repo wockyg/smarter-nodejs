@@ -212,7 +212,7 @@ exports.findAllFollowUpHold = (req, res) => {
 };
 
 // Find all referral search
-exports.findAllReferralSearch = (req, res) => {
+exports.findAllSearchAll = (req, res) => {
     ReferralView.findAll({
         attributes: [
             'referralId',
@@ -227,12 +227,181 @@ exports.findAllReferralSearch = (req, res) => {
             'claimantBirthDate', 
             'therapist', 
             'adjuster',
+            'adjusterClient',
             'casemanager',
             'referralStatus',
             'ptStatus',
             'billingStatus',
             'bodyPart'
-        ] 
+        ]
+    })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving referrals searchall."
+      });
+    });
+};
+
+// Retrieve referrals that match search criteria
+exports.searchReferrals = (req, res) => {
+    const {
+      assign, 
+      service, 
+      claimant, 
+      claimNumber,
+      therapist,
+      adjuster,
+      adjusterClient,
+      casemanager,
+      referralStatus,
+      ptStatus,
+      billingStatus,
+      bodyPart
+     } = req.query;
+
+    // const assign = req.query.assign;
+
+    // console.log(req.query);
+
+    ReferralView.findAll({
+        attributes: [
+            'referralId',
+            'referralDate', 
+            'assign', 
+            'service', 
+            'approvedVisits', 
+            'apptDate', 
+            'apptTime', 
+            'claimant', 
+            'claimNumber',
+            'claimantBirthDate', 
+            'therapist', 
+            'adjuster',
+            'adjusterClient',
+            'casemanager',
+            'referralStatus',
+            'ptStatus',
+            'billingStatus',
+            'bodyPart'
+        ],
+        where: { 
+            [Op.and]: [
+                {assign: {
+                  [Op.like]: assign ? `${assign}` : '%'
+                }},
+                {service: {
+                  [Op.like]: service ? `%${service}%` : '%'
+                }},
+                {claimant: {
+                  [Op.like]: claimant ? `%${claimant}%` : '%'
+                }},
+                {claimNumber: {
+                  [Op.like]: claimNumber ? `%${claimNumber}%` : '%'
+                }},
+                {therapist: therapist 
+                          ? 
+                          { [Op.like]: `%${therapist}%` } 
+                          : 
+                          { [Op.or]: {
+                            [Op.like]: '%',
+                            [Op.is]: null,
+                          } }
+                },
+                {adjuster: adjuster 
+                          ? 
+                          { [Op.like]: `%${adjuster}%` } 
+                          : 
+                          { [Op.or]: {
+                            [Op.like]: '%',
+                            [Op.is]: null,
+                          } }
+                },
+                {adjusterClient: adjusterClient 
+                          ? 
+                          { [Op.like]: `%${adjusterClient}%` } 
+                          : 
+                          { [Op.or]: {
+                            [Op.like]: '%',
+                            [Op.is]: null,
+                          } }
+                },
+                {casemanager: casemanager 
+                          ? 
+                          { [Op.like]: `%${casemanager}%` } 
+                          : 
+                          { [Op.or]: {
+                            [Op.like]: '%',
+                            [Op.is]: null,
+                          } }
+                },
+                {referralStatus: {
+                  [Op.like]: referralStatus ? `${referralStatus}` : '%'
+                }},
+                {ptStatus: ptStatus 
+                          ? 
+                          { [Op.like]: `${ptStatus}` } 
+                          : 
+                          { [Op.or]: {
+                            [Op.like]: '%',
+                            [Op.is]: null,
+                          } }
+                },
+                {billingStatus: billingStatus 
+                          ? 
+                          { [Op.like]: `${billingStatus}` } 
+                          : 
+                          { [Op.or]: {
+                            [Op.like]: '%',
+                            [Op.is]: null,
+                          } }
+                },
+                {bodyPart: bodyPart 
+                          ? 
+                          { [Op.like]: `${bodyPart}` } 
+                          : 
+                          { [Op.or]: {
+                            [Op.like]: '%',
+                            [Op.is]: null,
+                          } }
+                },
+            ]  
+        }
+    })
+    .then(data => {
+      console.log(data.length);
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving referrals."
+      });
+    });
+};
+
+// Find all referral dropdown
+exports.findAllReferralDropdown = (req, res) => {
+    ReferralView.findAll({
+        attributes: [
+            'referralId',
+            'assign', 
+            'service', 
+            'claimant', 
+            'claimNumber',
+            'claimantBirthDate', 
+            'ptStatus',
+            'billingStatus',
+            'bodyPart'
+        ],
+        where: {
+            billingStatus: {
+                [Op.ne]: 'Complete'
+            }
+        }
     })
     .then(data => {
       res.send(data);

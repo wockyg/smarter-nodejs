@@ -4,6 +4,12 @@ module.exports = app => {
 
   var router = require("express").Router();
 
+  // Retrieve all claimants dropdown
+  router.get("/dropdown", claimantsView.findAllDropDown);
+
+  // Retrieve all claimants searchall
+  router.get("/searchall", claimantsView.findAllSearchAll);
+
   // Retrieve a single claimant with id
   router.get("/:id", claimantsView.findOne);
 

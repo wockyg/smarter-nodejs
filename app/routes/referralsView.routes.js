@@ -26,7 +26,13 @@ module.exports = app => {
   router.get("/followuphold", referralsView.findAllFollowUpHold);
 
   // Retrieve all referral search
-  router.get("/referralsearch", referralsView.findAllReferralSearch);
+  router.get("/searchall", referralsView.findAllSearchAll);
+
+  // Retrieve referrals that match search criteria
+  router.get("/search", referralsView.searchReferrals);
+
+  // Retrieve all referral dropdown
+  router.get("/dropdown", referralsView.findAllReferralDropdown);
 
   // Retrieve a single referral with id
   router.get("/:id", referralsView.findOne);

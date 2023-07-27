@@ -30,13 +30,13 @@ exports.findOne = (req, res) => {
             res.send(data);
         } else {
             res.status(404).send({
-            message: `Cannot find casemanagers with id=${id}.`
+            message: `Cannot find casemanager with id=${id}.`
             });
         }
         })
         .catch(err => {
         res.status(500).send({
-            message: "Error retrieving casemanagers with id=" + id
+            message: "Error retrieving casemanager with id=" + id
         });
         });
   
@@ -54,4 +54,60 @@ exports.findAllActive = (req, res) => {
           err.message || "Some error occurred while retrieving active casemanagers."
       });
     });
+};
+
+// Retrieve all casemanagers from the database (minified for dropdown/autocomplete field list).
+exports.findAllDropDown = (req, res) => {
+    CasemanagerView.findAll({
+        attributes: [
+            'casemanagerId', 
+            'firstName',
+            'lastName',
+            'clientId',
+            'client',
+            'status'
+        ],
+        where: {
+            status: {
+                [Op.or]: {
+                    [Op.eq]: 'Active',
+                    [Op.is]: null
+                }
+            }
+        }
+    })
+        .then(data => {
+        res.send(data);
+        })
+        .catch(err => {
+        res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving casemanagers dropdown."
+        });
+        });
+  
+};
+
+// Retrieve all casemanagers from the database (minified for search table).
+exports.findAllSearchAll = (req, res) => {
+    CasemanagerView.findAll({
+        attributes: [
+            'casemanagerId', 
+            'firstName',
+            'lastName',
+            'clientId',
+            'client',
+            'email',
+            'status'
+        ]
+    })
+        .then(data => {
+        res.send(data);
+        })
+        .catch(err => {
+        res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving casemanagers searchall."
+        });
+        });
 };

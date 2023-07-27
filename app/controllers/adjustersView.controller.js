@@ -63,11 +63,15 @@ exports.findAllDropDown = (req, res) => {
             'adjusterId', 
             'firstName',
             'lastName',
-            'clientId'
+            'clientId',
+            'client'
         ],
         where: {
             status: {
-                [Op.ne]: 'Inactive'
+                [Op.or]: {
+                    [Op.eq]: 'Active',
+                    [Op.is]: null
+                }
             }
         }
     })
@@ -77,8 +81,31 @@ exports.findAllDropDown = (req, res) => {
         .catch(err => {
         res.status(500).send({
             message:
-            err.message || "Some error occurred while retrieving adjusters."
+            err.message || "Some error occurred while retrieving adjusters dropdown."
         });
         });
-  
+};
+
+// Retrieve all adjusters from the database (minified for search table).
+exports.findAllSearchAll = (req, res) => {
+    AdjusterView.findAll({
+        attributes: [
+            'adjusterId', 
+            'firstName',
+            'lastName',
+            'clientId',
+            'client',
+            'email',
+            'status'
+        ]
+    })
+        .then(data => {
+        res.send(data);
+        })
+        .catch(err => {
+        res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving adjusters searchall."
+        });
+        });
 };

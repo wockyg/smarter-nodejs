@@ -7,6 +7,12 @@ module.exports = app => {
   // Create a new therapist
   router.post("/", therapists.create);
 
+  // Retrieve all therapists searchall
+  router.get("/searchall", therapists.findAllSearchAll);
+
+  // Retrieve all therapists dropdown
+  router.get("/dropdown", therapists.findAllDropDown);
+
   // Retrieve a single therapist with id
   router.get("/:id", therapists.findOne);
 

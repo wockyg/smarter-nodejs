@@ -7,6 +7,12 @@ module.exports = app => {
   // Create a new employer
   router.post("/", employers.create);
 
+  // Retrieve all employers dropdown
+  router.get("/dropdown", employers.findAllDropDown);
+
+  // Retrieve all employers searchall
+  router.get("/searchall", employers.findAllSearchAll);
+
   // Retrieve a single employer with id
   router.get("/:id", employers.findOne);
 

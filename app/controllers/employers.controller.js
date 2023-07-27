@@ -62,6 +62,47 @@ exports.findAll = (req, res) => {
   
 };
 
+// Retrieve all employers (minified for dropdown/autocomplete field list).
+exports.findAllDropDown = (req, res) => {
+    Employer.findAll({
+        attributes: [
+            'employerId', 
+            'name',
+        ]
+    })
+        .then(data => {
+        res.send(data);
+        })
+        .catch(err => {
+        res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving employers dropdown."
+        });
+        });
+  
+};
+
+// Retrieve all employers (minified for search table).
+exports.findAllSearchAll = (req, res) => {
+    Employer.findAll({
+        attributes: [
+            'employerId', 
+            'name',
+            'phone'
+        ]
+    })
+        .then(data => {
+        res.send(data);
+        })
+        .catch(err => {
+        res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving employers searchall."
+        });
+        });
+  
+};
+
 // Find a single employer with an id
 exports.findOne = (req, res) => {
     const id = req.params.id;

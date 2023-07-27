@@ -41,3 +41,50 @@ exports.findOne = (req, res) => {
         });
   
 };
+
+// Retrieve all claimants (minified for dropdown/autocomplete field list).
+exports.findAllDropDown = (req, res) => {
+    ClaimantView.findAll({
+        attributes: [
+            'claimantId', 
+            'firstName',
+            'lastName',
+            'birthDate'
+        ]
+    })
+        .then(data => {
+        res.send(data);
+        })
+        .catch(err => {
+        res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving claimants dropdown."
+        });
+        });
+  
+};
+
+// Retrieve all claimants (minified for search table).
+exports.findAllSearchAll = (req, res) => {
+    ClaimantView.findAll({
+        attributes: [
+            'claimantId', 
+            'firstName',
+            'lastName',
+            'birthDate',
+            'employerId',
+            'employer',
+            'phone',
+        ]
+    })
+        .then(data => {
+        res.send(data);
+        })
+        .catch(err => {
+        res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving claimants searchall."
+        });
+        });
+  
+};

@@ -36,13 +36,34 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATEONLY,
       allowNull: true
     },
+    birthDateFormat: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        const d = this.birthDate ? new Date(this.birthDate) : null;
+        return this.birthDate ? `${d.getUTCMonth()+1}/${d.getUTCDate()}/${d.getUTCFullYear()}` : null;
+      }
+    },
     injuryDate1: {
       type: DataTypes.DATEONLY,
       allowNull: true
     },
+    injuryDate1Format: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        const d = this.injuryDate1 ? new Date(this.injuryDate1) : null;
+        return this.injuryDate1 ? `${d.getUTCMonth()+1}/${d.getUTCDate()}/${d.getUTCFullYear()}` : null;
+      }
+    },
     injuryDate2: {
       type: DataTypes.DATEONLY,
       allowNull: true
+    },
+    injuryDate2Format: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        const d = this.injuryDate2 ? new Date(this.injuryDate2) : null;
+        return this.injuryDate2 ? `${d.getUTCMonth()+1}/${d.getUTCDate()}/${d.getUTCFullYear()}` : null;
+      }
     },
     address: {
       type: DataTypes.STRING(100),

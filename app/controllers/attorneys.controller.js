@@ -63,6 +63,52 @@ exports.findAll = (req, res) => {
   
 };
 
+// Retrieve all attorneys (minified for dropdown/autocomplete field list).
+exports.findAllDropDown = (req, res) => {
+    Attorney.findAll({
+        attributes: [
+            'attorneyId', 
+            'lastName',
+            'firstName',
+            'firm',
+        ]
+    })
+        .then(data => {
+        res.send(data);
+        })
+        .catch(err => {
+        res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving attorneys dropdown."
+        });
+        });
+  
+};
+
+// Retrieve all attorneys (minified for search table).
+exports.findAllSearchAll = (req, res) => {
+    Attorney.findAll({
+        attributes: [
+            'attorneyId', 
+            'lastName',
+            'firstName',
+            'firm',
+            'email',
+            'type'
+        ]
+    })
+        .then(data => {
+        res.send(data);
+        })
+        .catch(err => {
+        res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving attorneys searchall."
+        });
+        });
+  
+};
+
 // Find a single attorney with an id
 exports.findOne = (req, res) => {
     const id = req.params.id;

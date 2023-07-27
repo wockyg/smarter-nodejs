@@ -113,6 +113,84 @@ exports.findAll = (req, res) => {
   
 };
 
+// Retrieve all therapists from the database (minified for dropdown/autocomplete field list).
+exports.findAllDropDown = (req, res) => {
+    Therapist.findAll({
+        attributes: [
+            'therapistId', 
+            'name',
+            'address',
+            'city',
+            'state',
+            'zip',
+            'phone',
+            'phoneExt',
+            'fax'
+        ],
+        where: {
+            doNotUse: {
+                [Op.is]: null
+            }
+        }
+    })
+        .then(data => {
+        res.send(data);
+        })
+        .catch(err => {
+        res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving therapists dropdown."
+        });
+        });
+  
+};
+
+// Retrieve all therapists from the database (minified for search table).
+exports.findAllSearchAll = (req, res) => {
+    Therapist.findAll({
+        attributes: [
+            'therapistId', 
+            'name',
+            'address',
+            'city',
+            'state',
+            'zip',
+            'phone',
+            'phoneExt',
+            'fax',
+            'fceAgreement',
+            'fceAgreementStatus',
+            'fceAgreementTimestamp',
+            'fce',
+            'fceRate',
+            'ppd',
+            'ppdRate',
+            'dptAgreement',
+            'dptAgreementStatus',
+            'dptAgreementTimestamp',
+            'dpt',
+            'dailyRate',
+            'evalRate',
+            'combinedRate',
+            'wcwhFirst2Hrs',
+            'wcwhAdditionalHour',
+            'wcwhAgreement',
+            'wcwhAgreementStatus',
+            'wcwhAgreementTimestamp'
+        ]
+    })
+        .then(data => {
+        res.send(data);
+        })
+        .catch(err => {
+        res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving therapists dropdown."
+        });
+        });
+  
+};
+
 // Find a single therapist with an id
 exports.findOne = (req, res) => {
     const id = req.params.id;

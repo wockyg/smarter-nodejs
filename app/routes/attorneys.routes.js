@@ -13,6 +13,12 @@ module.exports = app => {
   // Retrieve all defense attorneys
   router.get("/defense", attorneys.findAllDefense);
 
+  // Retrieve all attorneys dropdown
+  router.get("/dropdown", attorneys.findAllDropDown);
+
+  // Retrieve all attorneys searchall
+  router.get("/searchall", attorneys.findAllSearchAll);
+
   // Retrieve a single attorney with id
   router.get("/:id", attorneys.findOne);
 

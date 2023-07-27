@@ -7,6 +7,12 @@ module.exports = app => {
   // Retrieve all active casemanagers
   router.get("/active", casemanagersView.findAllActive);
 
+  // Retrieve all casemanagers dropdown
+  router.get("/dropdown", casemanagersView.findAllDropDown);
+
+  // Retrieve all casemanagers searchall
+  router.get("/searchall", casemanagersView.findAllSearchAll);
+
   // Retrieve a single casemanager with id
   router.get("/:id", casemanagersView.findOne);
 

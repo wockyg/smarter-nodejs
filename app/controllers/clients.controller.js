@@ -58,6 +58,48 @@ exports.findAll = (req, res) => {
   
 };
 
+// Retrieve all clients (minified for dropdown/autocomplete field list).
+exports.findAllDropDown = (req, res) => {
+    Client.findAll({
+        attributes: [
+            'clientId', 
+            'client',
+        ]
+    })
+        .then(data => {
+        res.send(data);
+        })
+        .catch(err => {
+        res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving clients dropdown."
+        });
+        });
+  
+};
+
+// Retrieve all clients (minified for search table).
+exports.findAllSearchAll = (req, res) => {
+    Client.findAll({
+        attributes: [
+            'clientId', 
+            'client',
+            'notes',
+            'billingProtocol'
+        ]
+    })
+        .then(data => {
+        res.send(data);
+        })
+        .catch(err => {
+        res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving clients dropdown."
+        });
+        });
+  
+};
+
 // Find a single client with an id
 exports.findOne = (req, res) => {
     const id = req.params.id;
@@ -130,18 +172,18 @@ exports.delete = (req, res) => {
 };
 
 // Delete all clients from the database.
-exports.deleteAll = (req, res) => {
-    Client.destroy({
-    where: {},
-    truncate: false
-  })
-    .then(nums => {
-      res.send({ message: `${nums} clients were deleted successfully!` });
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all clients."
-      });
-    });  
-};
+// exports.deleteAll = (req, res) => {
+//     Client.destroy({
+//     where: {},
+//     truncate: false
+//   })
+//     .then(nums => {
+//       res.send({ message: `${nums} clients were deleted successfully!` });
+//     })
+//     .catch(err => {
+//       res.status(500).send({
+//         message:
+//           err.message || "Some error occurred while removing all clients."
+//       });
+//     });  
+// };
