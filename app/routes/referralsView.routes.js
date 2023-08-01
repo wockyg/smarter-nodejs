@@ -5,7 +5,7 @@ module.exports = app => {
   var router = require("express").Router();
 
   // Retrieve all Open/Hold/Reschedule referrals
-  router.get("/open", referralsView.findAllOpenHoldReschedule);
+  router.get("/open", referralsView.findAllOpenHoldRescheduleCancel);
 
   // Retrieve all Complete/pending IA referrals
   router.get("/complete", referralsView.findAllComplete);

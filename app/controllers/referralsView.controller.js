@@ -39,14 +39,15 @@ exports.findOne = (req, res) => {
   
 };
 
-// Find all Open/Hold/Reschedule referrals
-exports.findAllOpenHoldReschedule = (req, res) => {
+// Find all Open/Hold/Reschedule/Cancel referrals
+exports.findAllOpenHoldRescheduleCancel = (req, res) => {
     ReferralView.findAll({
         where: { 
             [Op.or]: [
                 {referralStatus: 'Open'},
                 {referralStatus: 'Hold'},
-                {referralStatus: 'Reschedule'}
+                {referralStatus: 'Reschedule'},
+                {referralStatus: 'Cancel'}
             ]  
         } })
     .then(data => {
