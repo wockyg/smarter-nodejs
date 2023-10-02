@@ -125,8 +125,8 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.VIRTUAL,
       get() {
         const s = this.service ? this.service : null;
-        // const sg = s !== null && (s?.includes("DPT") ? "DPT" : (s?.includes("FCE") ? "FCE" : (s?.includes("PPD") ? "FCE" : null)));
-        return (s);
+        const sg = s !== null && (s?.includes("DPT") ? "DPT" : (s?.includes("FCE") ? "FCE" : (s?.includes("PPD") ? "FCE" : null)));
+        return (sg);
       }
     },
     jurisdiction: {
