@@ -250,6 +250,26 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: true
     },
+    employer: {
+      type: DataTypes.STRING(202),
+      allowNull: true
+    },
+    employerAddress: {
+      type: DataTypes.STRING(202),
+      allowNull: true
+    },
+    employerCity: {
+      type: DataTypes.STRING(202),
+      allowNull: true
+    },
+    employerState: {
+      type: DataTypes.STRING(202),
+      allowNull: true
+    },
+    employerZip: {
+      type: DataTypes.STRING(202),
+      allowNull: true
+    },
     therapistId: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -294,6 +314,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(50),
       allowNull: true
     },
+    therapistBeaver: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
     therapistDisplay: {
       type: DataTypes.VIRTUAL,
       get() {
@@ -324,6 +348,10 @@ module.exports = function(sequelize, DataTypes) {
     },
     adjusterClient: {
       type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    adjusterClientMailingAddress: {
+      type: DataTypes.TEXT,
       allowNull: true
     },
     adjusterDisplay: {
@@ -378,6 +406,10 @@ module.exports = function(sequelize, DataTypes) {
     },
     physicianLast: {
       type: DataTypes.STRING(202),
+      allowNull: true
+    },
+    physicianNPI: {
+      type: DataTypes.INTEGER,
       allowNull: true
     },
     physicianFacility: {

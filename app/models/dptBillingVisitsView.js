@@ -91,6 +91,38 @@ module.exports = function(sequelize, DataTypes) {
         return this.therapist ? `${this.therapist} :: ${this.therapistAddress}${this.therapistSuite ? `, Ste ${this.therapistSuite}` : ''}, ${this.therapistCity}, ${this.therapistState} ${this.therapistZip} :: P ${this.therapistPhone}${this.therapistPhoneExt ? ` x${this.therapistPhoneExt}` : ''} :: F ${this.therapistFax}` : null;
       }
     },
+    therapistDisplayShort: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.therapist ? `${this.therapist} :: ${this.therapistAddress}${this.therapistSuite ? `, Ste ${this.therapistSuite}` : ''}, ${this.therapistCity}, ${this.therapistState} ${this.therapistZip}` : null;
+      }
+    },
+    bulkBillingId: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    billsMonthly: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    bulkBillingName: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    bulkBillingContact: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    bulkBillingEmail: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    bulkBillingDisplay: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return this.bulkBillingId ? `${this.bulkBillingName} || ${this.bulkBillingContact ? this.bulkBillingContact : ''} :: ${this.bulkBillingEmail ? `${this.bulkBillingEmail}` : 'NEED EMAIL'}` : null;
+      }
+    },
     dos: {
       type: DataTypes.DATEONLY,
       allowNull: true
@@ -100,6 +132,13 @@ module.exports = function(sequelize, DataTypes) {
       get() {
         const d = new Date(this.dos);
         return `${d.getUTCMonth()+1}/${d.getUTCDate()}/${d.getUTCFullYear()}`;
+      }
+    },
+    dosFormatFileName: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        const d = new Date(this.dos);
+        return `${d.getUTCMonth()+1 < 9 ? `0${d.getUTCMonth()+1}` : d.getUTCMonth()+1}-${d.getUTCDate() < 9 ? `0${d.getUTCDate()}` : d.getUTCDate()}-${d.getUTCFullYear()}`;
       }
     },
     dosTime: {
@@ -136,6 +175,10 @@ module.exports = function(sequelize, DataTypes) {
         const d = new Date(this.v1500);
         return this.v1500 ? `${d.getUTCMonth()+1}/${d.getUTCDate()}/${d.getUTCFullYear()}` : null;
       }
+    },
+    v1500Status: {
+      type: DataTypes.TEXT,
+      allowNull: true
     },
     requestV1500: {
       type: DataTypes.STRING(50),
@@ -181,7 +224,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     adjusterRate: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     adjusterDateDueFormula: {
@@ -218,7 +261,7 @@ module.exports = function(sequelize, DataTypes) {
       }
     },
     adjusterAmountPaid: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     paymentStatusDate: {
@@ -260,7 +303,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     facilityRate: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     facilityDateDueFormula: {
@@ -298,7 +341,7 @@ module.exports = function(sequelize, DataTypes) {
       }
     },
     facilityAmountPaid: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     checkNumber: {

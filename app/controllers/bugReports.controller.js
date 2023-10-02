@@ -1,68 +1,59 @@
 const db = require("../models");
-const User = db.users;
+const BugReport = db.bugReports;
 const Op = db.Sequelize.Op;
 
 
-// Create and Save a new user
+// Create and Save a new bugReport
 exports.create = (req, res) => {
 
-  // Create new user
-  const user = {
-    initials: req.body.initials,
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    phone: req.body.phone,
-    status: req.body.status,
-    role: req.body.role,
-    schPermissions: req.body.schPermissions,
-    billPermissions: req.body.billPermissions,
-    d1500Permissions: req.body.d1500Permissions,
-    rrPermissions: req.body.rrPermissions,
-    ptoPermissions: req.body.ptoPermissions
+  // Create new bugReport
+  const bugReport = {
+    title: req.body.title,
+    description: req.body.description,
+    submittedBy: req.body.submittedBy,
   };
 
-  // Save user in the database
-  User.create(user)
+  // Save bugReport in the database
+  BugReport.create(bugReport)
     .then(data => {
       res.send(data);
     })
     .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while creating the user."
+          err.message || "Some error occurred while creating bugReport."
       });
     });
 
   
 };
 
-// Retrieve all users from the database.
+// Retrieve all bugReports from the database.
 exports.findAll = (req, res) => {
    
-    User.findAll()
+    BugReport.findAll()
         .then(data => {
         res.send(data);
         })
         .catch(err => {
         res.status(500).send({
             message:
-            err.message || "Some error occurred while retrieving users."
+            err.message || "Some error occurred while retrieving bugReports."
         });
         });
   
 };
 
-// Find a user with a given email address
-exports.findOne = (req, res) => {
-    User.findOne({ where: { email: req.params.email } })
+// Find all bugReports for a given user
+exports.findAllUser = (req, res) => {
+    BugReport.findAll({ where: { submittedBy: req.params.initials } })
     .then(data => {
       res.send(data);
     })
     .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving user."
+          err.message || "Some error occurred while retrieving bugReports for user."
       });
     });
 };
@@ -88,27 +79,27 @@ exports.findOne = (req, res) => {
   
 // };
 
-// Update a user by the id in the request
+// Update a bugReport by the id in the request
 exports.update = (req, res) => {
-    const initials = req.params.initials;
+    const id = req.params.id;
 
-    User.update(req.body, {
-        where: { initials: initials }
+    BugReport.update(req.body, {
+        where: { bugId: id }
     })
         .then(num => {
         if (num == 1) {
             res.send({
-            message: "user was updated successfully."
+            message: "bugReport was updated successfully."
             });
         } else {
             res.send({
-            message: `Cannot update user with id=${initials}. Maybe user was not found or req.body is empty!`
+            message: `Cannot update bugReport with id=${id}. Maybe bugReport was not found or req.body is empty!`
             });
         }
         })
         .catch(err => {
         res.status(500).send({
-            message: "Error updating user with id=" + initials
+            message: "Error updating bugReport with id=" + id
         });
         });
 };

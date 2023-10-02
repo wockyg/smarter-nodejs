@@ -1,68 +1,60 @@
 const db = require("../models");
-const User = db.users;
+const UserPto = db.user_pto;
 const Op = db.Sequelize.Op;
 
 
-// Create and Save a new user
+// Create and Save a new pto
 exports.create = (req, res) => {
 
   // Create new user
-  const user = {
-    initials: req.body.initials,
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    phone: req.body.phone,
-    status: req.body.status,
-    role: req.body.role,
-    schPermissions: req.body.schPermissions,
-    billPermissions: req.body.billPermissions,
-    d1500Permissions: req.body.d1500Permissions,
-    rrPermissions: req.body.rrPermissions,
-    ptoPermissions: req.body.ptoPermissions
+  const pto = {
+    userId: req.body.userId,
+    title: req.body.title,
+    start: req.body.start,
+    end: req.body.end
   };
 
-  // Save user in the database
-  User.create(user)
+  // Save pto in the database
+  UserPto.create(pto)
     .then(data => {
       res.send(data);
     })
     .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while creating the user."
+          err.message || "Some error occurred while creating the pto."
       });
     });
 
   
 };
 
-// Retrieve all users from the database.
+// Retrieve all pto from the database.
 exports.findAll = (req, res) => {
    
-    User.findAll()
+    UserPto.findAll()
         .then(data => {
         res.send(data);
         })
         .catch(err => {
         res.status(500).send({
             message:
-            err.message || "Some error occurred while retrieving users."
+            err.message || "Some error occurred while retrieving pto."
         });
         });
   
 };
 
-// Find a user with a given email address
-exports.findOne = (req, res) => {
-    User.findOne({ where: { email: req.params.email } })
+// Find all pto for a given user
+exports.findAllUser = (req, res) => {
+    UserPto.findAll({ where: { userId: req.params.userId } })
     .then(data => {
       res.send(data);
     })
     .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving user."
+          err.message || "Some error occurred while retrieving pto for user."
       });
     });
 };
@@ -89,29 +81,29 @@ exports.findOne = (req, res) => {
 // };
 
 // Update a user by the id in the request
-exports.update = (req, res) => {
-    const initials = req.params.initials;
+// exports.update = (req, res) => {
+//     const initials = req.params.initials;
 
-    User.update(req.body, {
-        where: { initials: initials }
-    })
-        .then(num => {
-        if (num == 1) {
-            res.send({
-            message: "user was updated successfully."
-            });
-        } else {
-            res.send({
-            message: `Cannot update user with id=${initials}. Maybe user was not found or req.body is empty!`
-            });
-        }
-        })
-        .catch(err => {
-        res.status(500).send({
-            message: "Error updating user with id=" + initials
-        });
-        });
-};
+//     User.update(req.body, {
+//         where: { initials: initials }
+//     })
+//         .then(num => {
+//         if (num == 1) {
+//             res.send({
+//             message: "user was updated successfully."
+//             });
+//         } else {
+//             res.send({
+//             message: `Cannot update user with id=${initials}. Maybe user was not found or req.body is empty!`
+//             });
+//         }
+//         })
+//         .catch(err => {
+//         res.status(500).send({
+//             message: "Error updating user with id=" + initials
+//         });
+//         });
+// };
 
 // Delete an client with the specified id in the request
 // exports.delete = (req, res) => {

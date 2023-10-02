@@ -22,6 +22,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: true,
     },
+    adjusterBeaver: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
     clientId: {
       type: DataTypes.INTEGER,
       allowNull: true,

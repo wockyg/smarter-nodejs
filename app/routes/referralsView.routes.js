@@ -34,6 +34,12 @@ module.exports = app => {
   // Retrieve all referral dropdown
   router.get("/dropdown", referralsView.findAllReferralDropdown);
 
+  // Retrieve all referral calendar
+  router.get("/calendar", referralsView.findAllReferralCalendar);
+
+  // Retrieve all referrals tasks
+  router.get("/tasks", referralsView.findAllReferralsTasks);
+
   // Retrieve a single referral with id
   router.get("/:id", referralsView.findOne);
 

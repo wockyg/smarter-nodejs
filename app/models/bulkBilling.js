@@ -51,6 +51,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(100),
       allowNull: true
     },
+    bulkBillingDisplay: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return `${this.name} :: ${this.billingContact ? this.billingContact : ''} :: ${this.billingEmail ? `${this.billingEmail}` : 'NEED EMAIL'}`;
+      }
+    },
     billsMonthly: {
       type: DataTypes.STRING(50),
       allowNull: true

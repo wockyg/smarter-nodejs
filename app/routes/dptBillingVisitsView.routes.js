@@ -16,6 +16,9 @@ module.exports = app => {
   // Retrieve all facilityPastDue
   router.get("/facilityPastDue", dptBillingVisitsView.findAllFacilityPastDue);
 
+  // Retrieve all dos dropdown for BillMachine
+  router.get("/dosDropdown/:id", dptBillingVisitsView.findAllDropdownBillMachine);
+
   // Retrieve all visits for a particular claim
   router.get("/claim/:id", dptBillingVisitsView.findAllVisitsForClaim);
 

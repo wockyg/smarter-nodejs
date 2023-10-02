@@ -20,6 +20,7 @@ exports.create = (req, res) => {
     city: req.body.city,
     state: req.body.state,
     zip: req.body.zip,
+    contact: req.body.contact,
     phone: req.body.phone,
     phoneExt: req.body.phoneExt,
     phone2: req.body.phone2,

@@ -135,7 +135,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     fceRate: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     ppd: {
@@ -143,7 +143,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     ppdRate: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     dptAgreement: {
@@ -163,23 +163,23 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     dailyRate: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     evalRate: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     combinedRate: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     wcwhFirst2Hrs: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     wcwhAdditionalHour: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     wcwhAgreement: {
@@ -207,31 +207,31 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     oldDailyRate: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     oldEvalRate: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     oldCombinedRate: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     oldFceRate: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     oldPpdRate: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     oldWcwhFirst2Hrs: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     oldWcwhAdditionalHr: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     billingContact: {
@@ -337,7 +337,15 @@ module.exports = function(sequelize, DataTypes) {
     dateAdded: {
       type: DataTypes.DATE,
       allowNull: true
-    }
+    },
+    lat: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    lon: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
   }, {
     sequelize,
     tableName: 'therapists',

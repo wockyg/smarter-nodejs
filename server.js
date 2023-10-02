@@ -4,10 +4,12 @@ const schedule = require('node-schedule');
 const db = require("./app/models");
 const emailjs = require('@emailjs/nodejs');
 const { Op } = require("sequelize");
-const { dptBillingVisits, sequelize } = require("./app/models");
+const { sequelize } = require("./app/models");
 
-const Referral = db.referralsView;
+const Referral = db.referrals;
+const ReferralView = db.referralsView;
 const ReferralNote = db.referralNotes;
+const DptBillingVisit = db.dptBillingVisitsView;
 
 const app = express();
 
@@ -33,6 +35,7 @@ app.get("/", (req, res) => {
 
 require("./app/routes/adjusters.routes")(app);
 require("./app/routes/attorneys.routes")(app);
+require("./app/routes/bulkBilling.routes")(app);
 require("./app/routes/casemanagers.routes")(app);
 require("./app/routes/claimants.routes")(app);
 require("./app/routes/clients.routes")(app);
@@ -45,6 +48,13 @@ require("./app/routes/dptBillingVisits.routes")(app);
 require("./app/routes/dptAuthorization.routes")(app);
 require("./app/routes/fceppdBilling.routes")(app);
 require("./app/routes/users.routes")(app);
+require("./app/routes/user_pto.routes")(app);
+require("./app/routes/referral_icd10.routes")(app);
+require("./app/routes/lookup_cpt.routes")(app);
+require("./app/routes/d1500.routes")(app);
+require("./app/routes/d1500Rows.routes")(app);
+require("./app/routes/d1500View.routes")(app);
+require("./app/routes/bugReports.routes")(app);
 
 require("./app/routes/adjustersView.routes")(app);
 require("./app/routes/casemanagersView.routes")(app);
@@ -57,17 +67,106 @@ require("./app/routes/lookup_UsState.routes")(app);
 
 // const path = 'http://localhost:3000';
 
-// D_CCWorkedFUEmail Task (6:00AM) (0 6 * * *)
+// test CRON: '0 * * * * *'
+
+// D_DPTFUTrigger Task (6:00AM) (0 6 * * *)
 // schedule.scheduleJob('0 6 * * *', function(){
+
+//   // let bucket = [];
+
+//   const date = new Date();
+//   console.log('D_DPTFUTrigger', date);
+
+//   //query referrals
+//   Referral.findAll({
+//       attributes: [
+//           'referralId',
+//       ],
+//       where: {
+//         [Op.and]: {
+//           ptStatus: 'Active',
+//           service: {
+//             [Op.substring]: 'DPT'
+//           }
+//         },
+//       }
+//   })
+//   .then(referrals => {
+
+//     console.log(referrals.length);
+
+//     let i = 0;
+
+//     // for each referral
+//     referrals.forEach(r => {
+
+//       //query for numDOS
+//       DptBillingVisit.findAll({
+//           attributes: [
+//               'referralId',
+//           ],
+//           where: {
+//             referralId: r.referralId,
+//             dos: {[Op.not]: null}
+//           }
+//       })
+//       .then(visitsDOS => {
+
+//         //query for numAttend
+//         DptBillingVisit.findAll({
+//             attributes: [
+//                 'referralId',
+//             ],
+//             where: {
+//               referralId: r.referralId,
+//               attend: {[Op.not]: null}
+//             }
+//         })
+//         .then(visitsAttend => {
+
+//           // if numDOS === numAttend, send to follow-up
+//           if (visitsDOS.length === visitsAttend.length && visitsDOS > 0) {
+//             console.log(r.referralId, " numDOS: ", visitsDOS.length, ", numAttend: ", visitsAttend.length);
+//             bucket.push(r.referralId);
+//             console.log("New bucket entry:", bucket[i]);
+//             i++;
+
+//             if (r.referralId === 5774) {
+//               Referral.update({ptStatus: "Follow-Up", fuHoldNotes: "Need Upcoming appts"}, {
+//                 where: { referralId: r.referralId }
+//               })
+//               .then(x => {
+//                 console.log("x", x);
+//               })
+//             }
+
+//           }
+//         });
+//       });
+//     });
+//   })
+//   .catch(err => {
+//   console.log(err.message || "Some error occurred while retrieving referrals.");
+//   });
+// });
+
+// D_CCWorkedFUEmail Task (6:15AM) (15 6 * * *)
+// schedule.scheduleJob('15 6 * * *', function(){
 
 //   const date = new Date();
 //   console.log('D_CCWorkedFUEmail', date);
 //   const twoDaysAgo = date.getDate() - 2;
 //   date.setDate(twoDaysAgo);
 //   date.setHours(0);
-
-//   //query referrals
-//   Referral.findAll({
+  
+//   // query referrals
+//   ReferralView.findAll({
+//     attributes: [
+//         'referralId',
+//         'assignEmail',
+//         'claimantLast',
+//         'claimantFirst',
+//     ],
 //     where: {
 //       ccWorked: {
 //         [Op.and]: {
@@ -77,42 +176,41 @@ require("./app/routes/lookup_UsState.routes")(app);
 //       },
 //     }
 //   })
-//   .then(data => {
+//   .then(referrals => {
 
-//     console.log(data.length);
+//     console.log(referrals.length);
 
 //     // for each referral, send email and reset ccWorked
-//     data.forEach(e => {
+//     referrals.forEach(r => {
 
-//       console.log(e.assignEmail);
+//       console.log(r.assignEmail);
 
 //       const params = {
-//         to_email: `${e.assignEmail}`,
-//         subject: `Follow-Up CC Worked - ${e.claimantLast}, ${e.claimantFirst}`,
-//         message: `Click <a href="${path}/${e.referralId}">here</a> to view in smart.`
+//         to_email: `${r.assignEmail}`,
+//         subject: `Follow-Up CC Worked - ${r.claimantLast}, ${r.claimantFirst}`,
+//         message: `Click <a href="${path}/${r.referralId}">here</a> to view in smart.`
 //       }
-      
-//       // emailjs.send('service_zl67u0w', 'template_a7ve3kt', params, {publicKey: '0mive5-lH56wNnNf7', privateKey: 'T8DWBUrOBVTit5NO7UhTo'})
-//       //        .then((res) => {
-//       //           console.log(res.status, res.text);
-//       //           console.log(params);
-//       //        }, (err) => {
-//       //           console.log(err.text);
-//       //        });
 
-//       // Referral.update({ccWorked: null}, {
-//       //   where: { referralId: e.referralId }
-//       // })
-//       //   .then(num => {
-//       //   if (num == 1) {
-//       //       console.log(num);
-//       //   } else {
-//       //       console.log(num, `Cannot update referral with id=${id}. Maybe referral was not found or req.body is empty!`);
-//       //   }
-//       //   })
-//       //   .catch(err => {
-//       //     console.log(num, `Error updating referral with id=${id}.`);
-//       //   });
+//       Referral.update({ccWorked: null}, {
+//         where: { referralId: r.referralId }
+//       })
+//         .then(num => {
+//         if (num == 1) {
+//             console.log(num);
+//             emailjs.send('service_zl67u0w', 'template_a7ve3kt', params, {publicKey: '0mive5-lH56wNnNf7', privateKey: 'T8DWBUrOBVTit5NO7UhTo'})
+//              .then((res) => {
+//                 console.log(res.status, res.text);
+//                 console.log(params);
+//              }, (err) => {
+//                 console.log(err.text);
+//              });
+//         } else {
+//             console.log(num, `Cannot update referral with id=${id}. Maybe referral was not found or req.body is empty!`);
+//         }
+//         })
+//         .catch(err => {
+//           console.log(num, `Error updating referral with id=${id}.`);
+//         });
 //     });
 //   })
 //   .catch(err => {
@@ -120,17 +218,23 @@ require("./app/routes/lookup_UsState.routes")(app);
 //   });
 // });
 
-// D_CheckNotes14Days Task (6:15AM) (15 6 * * *)
-// schedule.scheduleJob('15 6 * * *', function(){
+// D_CheckNotes14Days Task (6:30AM) (30 6 * * *)
+// schedule.scheduleJob('30 6 * * *', function(){
 
 //   const date = new Date();
 //   console.log('D_CheckNotes14Days', date);
-//   const fourteenDaysAgo = date.getDate() - 14;
-//   date.setDate(fourteenDaysAgo);
-//   date.setHours(0);
+//   // const fourteenDaysAgo = date.getDate() - 14;
+//   // date.setDate(fourteenDaysAgo);
+//   // date.setHours(0);
 
 //   //query referrals
-//   Referral.findAll({
+//   ReferralView.findAll({
+//     attributes: [
+//         'referralId',
+//         'assignEmail',
+//         'claimantLast',
+//         'claimantFirst',
+//     ],
 //     where: {
 //       [Op.and]: {
 //         ptStatus: {
@@ -148,38 +252,45 @@ require("./app/routes/lookup_UsState.routes")(app);
 //       }
 //     }
 //   })
-//   .then(data => {
+//   .then(referrals => {
 
-//     console.log(data.length);
+//     console.log(referrals.length);
 
-//     data.forEach(e => {
+//     referrals.forEach(r => {
 
 //       ReferralNote.findAll({
+//         attributes: [
+//             'noteId',
+//         ],
 //         where: {
-//           referralId: e.referralId,
-//           initials: e.assign,
+//           referralId: r.referralId,
+//           initials: r.assign,
 //           timestamp: {[Op.lte]: date}
 //         },
-//         order: [['timestamp', 'DESC']]
+//         // order: [['timestamp', 'DESC']]
 //       })
 //       .then(notes => {
+
 //         console.log(notes.length);
+
 //           if (notes.length > 0) {
-            // const params = {
-            //   to_email: `${e.assignEmail}`,
-            //   subject: `14 Days since last note - ${e.claimantLast}, ${e.claimantFirst}`,
-            //   message: `Click <a href="${path}/${e.referralId}">here</a> to view in smart.`
-            // };
+
+//             const params = {
+//               to_email: `${r.assignEmail}`,
+//               subject: `14 Days since last note - ${r.claimantLast}, ${r.claimantFirst}`,
+//               message: `Click <a href="${path}/${r.referralId}">here</a> to view in smart.`
+//             };
 
 //             console.log(params);
 
-//             // emailjs.send('service_zl67u0w', 'template_a7ve3kt', params, {publicKey: '0mive5-lH56wNnNf7', privateKey: 'T8DWBUrOBVTit5NO7UhTo'})
-//             //  .then((res) => {
-//             //     console.log(res.status, res.text);
-//             //     console.log(params);
-//             //  }, (err) => {
-//             //     console.log(err.text);
-//             //  });
+//             emailjs.send('service_zl67u0w', 'template_a7ve3kt', params, {publicKey: '0mive5-lH56wNnNf7', privateKey: 'T8DWBUrOBVTit5NO7UhTo'})
+//              .then((res) => {
+//                 console.log(res.status, res.text);
+//                 console.log(params);
+//              }, (err) => {
+//                 console.log(err.text);
+//              });
+
 //           }
 //       })
 //       .catch(err => {
@@ -194,85 +305,190 @@ require("./app/routes/lookup_UsState.routes")(app);
 //   });
 // });
 
-// D_DPTFUTrigger Task (6:30AM) (30 6 * * *)
-// schedule.scheduleJob('0 * * * * *', function(){
+// D_ReminderEmail Task (6:45AM) (45 6 * * *)
+// schedule.scheduleJob('45 6 * * *', function(){
 
-//   let numDOS, numAttend;
+//   const today = new Date();
+//   console.log('D_ReminderEmail', today);
+//   today.setHours(0);
 
-//   let bucket = [];
-
-//   const date = new Date();
-//   console.log('D_DPTFUTrigger', date);
-
-//   //query referrals
-//   Referral.findAll({
+//   // const tomorrow = new Date();
+//   // const addDay = tomorrow.getDate() + 1;
+//   // tomorrow.setDate(addDay);
+//   // tomorrow.setHours(0);
+  
+//   // query referrals
+//   ReferralView.findAll({
+//     attributes: [
+//         'referralId',
+//         'assignEmail',
+//         'claimantLast',
+//         'claimantFirst',
+//     ],
 //     where: {
-//       [Op.and]: {
-//         ptStatus: 'Active',
-//         service: {
-//           [Op.substring]: 'DPT'
-//         }
-//       },
+//       reminderDate: today
 //     }
 //   })
-//   .then(data => {
+//   .then(referrals => {
 
-//     console.log(data.length);
+//     console.log(referrals.length);
 
-//     let i = 0;
+//     // for each referral, send email and set reminderSent timestamp
+//     referrals.forEach(r => {
 
-//     // for each referral
-//     data.forEach(e => {
+//       console.log(r.assignEmail);
 
-//       //query for numDOS
-//       dptBillingVisits.findAll({
-//         where: {
-//           referralId: e.referralId,
-//           dos: {[Op.not]: null}
-//         }
-//       })
-//       .then(visits1 => {
-//         numDOS = visits1.length;
-//         //query for numAttend
-//         dptBillingVisits.findAll({
-//           where: {
-//             referralId: e.referralId,
-//             attend: {[Op.not]: null}
-//           }
-//         })
-//         .then(visits2 => {
-//           numAttend = visits2.length;
-//           console.log(i, e.referralId, numDOS, numAttend);
-//           i++
-//           // if (numDOS < numAttend) {
-//           //   bucket[i] = {'referralId': e.referralId, 'numDOS': numDOS, 'numAttend': numAttend};
-//           //   // numDOS < numAttend && console.log('referralId: ', e.referralId, ', numDOS: ', numDOS, ', numAttend: ', numAttend);
-//           //   console.log(i, bucket[i]);
-//           //   i++;
-//           // }
-//         })
-//         .catch(err => {
-//           console.log(err.message || "Some error occurred while retrieving numAttend.");
-//         });
-//       })
-//       .catch(err => {
-//         console.log(err.message || "Some error occurred while retrieving numDOS.");
+//       const params = {
+//         to_email: `${r.assignEmail}`,
+//         subject: `F/U - Reminder Email - ${r.claimantLast}, ${r.claimantFirst}`,
+//         message: `Click <a href="${path}/${r.referralId}">here</a> to view in smart.`
+//       }
+
+//       emailjs.send('service_zl67u0w', 'template_a7ve3kt', params, {publicKey: '0mive5-lH56wNnNf7', privateKey: 'T8DWBUrOBVTit5NO7UhTo'})
+//              .then((res) => {
+//                 console.log(res.status, res.text);
+//                 console.log(params);
+
+//                 Referral.update({reminderSent: today}, {
+//                   where: { referralId: r.referralId }
+//                 })
+//                   .then(num => {
+//                   if (num == 1) {
+//                       console.log(num);
+                      
+//                   } else {
+//                       console.log(num, `Cannot update referral with id=${id}. Maybe referral was not found or req.body is empty!`);
+//                   }
+//                   })
+//                   .catch(err => {
+//                     console.log(num, `Error updating referral with id=${id}.`);
+//                   });
+
+//              }, (err) => {
+//                 console.log(err.text);
 //       });
 
-//       // Referral.update({ptStatus: 'Follow-Up', fuHoldNotes: 'Need Upcoming appts'}, {
-//       //   where: { referralId: e.referralId }
-//       // })
-//       //   .then(num => {
-//       //   if (num == 1) {
-//       //       console.log(num);
-//       //   } else {
-//       //       console.log(num, `Cannot update referral with id=${id}. Maybe referral was not found or req.body is empty!`);
-//       //   }
-//       //   })
-//       //   .catch(err => {
-//       //     console.log(num, `Error updating referral with id=${id}.`);
-//       //   });
 //     });
+
+//   })
+//   .catch(err => {
+//   console.log(err.message || "Some error occurred while retrieving referrals.");
+//   });
+// });
+
+// M_MonthlyDenialsReminder Task (First Monday of month at 7:00AM) (0 7 */100,1-7 * MON)
+// schedule.scheduleJob('0 7 */100,1-7 * MON', function(){
+
+//   const today = new Date();
+//   console.log('M_MonthlyDenialsReminder', today);
+//   today.setHours(0);
+
+//   const params = {
+//     to_email: "kmurray@definedpt.com",
+//     subject: "Monthly reminder to check DEN/IP/FU payments",
+//     message: "Monthly reminder to check DEN/IP/FU payments"
+//   }
+
+//   emailjs.send('service_zl67u0w', 'template_a7ve3kt', params, {publicKey: '0mive5-lH56wNnNf7', privateKey: 'T8DWBUrOBVTit5NO7UhTo'})
+//           .then((res) => {
+//             console.log(res.status, res.text);
+//             console.log(params);
+//           }, (err) => {
+//             console.log(err.text);
+//   });
+// });
+
+// W_MondayAutoEmailsJTJR Task (Mondays at 8:00AM) (0 8 * * 1)
+// schedule.scheduleJob('0 8 * * 1', function(){
+
+//   const today = new Date();
+//   console.log('W_MondayAutoEmailsJTJR', today);
+//   today.setHours(0);
+
+//   const lastMonday = new Date();
+//   const minusSeven = today.getDate() - 7;
+//   lastMonday.setDate(minusSeven);
+//   lastMonday.setHours(0);
+
+//   // query referrals
+//   ReferralView.findAll({
+//     attributes: [
+//         'claimNumber',
+//         'claimantLast',
+//         'claimantFirst',
+//         'adjuster',
+//         'adjusterClient',
+//         'reportToAdjuster',
+//     ],
+//     where: {
+//         [Op.and]: {
+//           reportToAdjuster: {
+//             [Op.between]: [lastMonday, today]
+//           },
+//           service: {
+//             [Op.notLike]: '%DPT%'
+//           }
+//         },
+//       }
+//   })
+//   .then(referrals => {
+
+//     console.log(referrals.length);
+
+//     const body = `
+//       <html>
+//           <head>
+//               <style>
+//                   table, th, td {
+//                   border: 1px solid black !important;
+//                   }
+//                   th {
+//                   text-align: center !important;
+//                   }
+//                   td {
+//                   text-align: left !important;
+//                   }
+//               </style>
+//           </head>
+//           <body>
+//               <table>
+//                   <tr>
+//                       <td>Claim Number</td>
+//                       <td>Claimant</td>
+//                       <td>Adjuster</td>
+//                       <td>Client</td>
+//                       <td>Report to Adj</td>
+//                   </tr>
+//                   // map here
+//                   ${referrals.map(r => {
+//                     `<tr>
+//                       <td>${r.claimNumber}</td>
+//                       <td>${r.claimantLast}, ${r.claimantFirst}</td>
+//                       <td>${r.adjuster}</td>
+//                       <td>${r.adjusterClient}</td>
+//                       <td>${r.reportToAdjuster}</td>
+//                     </tr>`
+//                   })}
+//               </table>
+//           </body>
+//       </html>
+//     `;
+
+//     const params = {
+//       to_email: "jrayoni@definedpt.com; jtehas@definedpt.com",
+//       cc_email: "wmcclure@definedpt.com",
+//       subject: "FCE Reports to Adjuster last week",
+//       message: body 
+//     };
+
+//     emailjs.send('service_zl67u0w', 'template_a7ve3kt', params, {publicKey: '0mive5-lH56wNnNf7', privateKey: 'T8DWBUrOBVTit5NO7UhTo'})
+//             .then((res) => {
+//               console.log(res.status, res.text);
+//               console.log(params);
+//             }, (err) => {
+//               console.log(err.text);
+//     });
+
 //   })
 //   .catch(err => {
 //   console.log(err.message || "Some error occurred while retrieving referrals.");

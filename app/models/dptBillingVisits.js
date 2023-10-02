@@ -47,6 +47,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATEONLY,
       allowNull: true
     },
+    v1500Status: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
     requestV1500: {
       type: DataTypes.STRING(50),
       allowNull: true
@@ -84,7 +88,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     adjusterRate: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     adjusterDatePaid: {
@@ -92,7 +96,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     adjusterAmountPaid: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     paymentStatusDate: {
@@ -120,7 +124,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     facilityRate: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     facilityDatePaid: {
@@ -128,7 +132,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     facilityAmountPaid: {
-      type: DataTypes.DECIMAL(10,0),
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
     checkNumber: {

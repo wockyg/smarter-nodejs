@@ -40,11 +40,11 @@ exports.findAllVisitsForClaim = (req, res) => {
 
 // Find all missingV1500
 exports.findAllMissingV1500 = (req, res) => {
-    VisitView.findAll({
+        VisitView.findAll({
       where: {
-        attend: 'Yes',
-        v1500: null,
-        writeOff: null
+          attend: 'Yes',
+          v1500: null,
+          writeOff: null
       } 
     })
     .then(data => {
@@ -125,6 +125,43 @@ exports.findAllFacilityPastDue = (req, res) => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while retrieving facilityPastDue."
+      });
+    });
+};
+
+// Find all dosDropdown for BillMachine
+exports.findAllDropdownBillMachine = (req, res) => {
+    VisitView.findAll({
+      attributes: [
+          'billingId', 
+          'referralId',
+          'dos',
+          'attend',
+          'v1500',
+          'd1500Sent',
+          'd1500Generated',
+          'hcfaId'
+      ],
+      where: {
+        referralId: req.params.id,
+        attend: 'Yes',
+        v1500: {
+          [Op.not]: null
+        },
+        // d1500Sent: {
+        //   [Op.not]: null,
+        //   [Op.lt]: d
+        // },
+      },
+      order: [['dos', 'ASC']]
+    })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving dosDropdown."
       });
     });
 };

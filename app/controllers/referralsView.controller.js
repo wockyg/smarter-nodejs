@@ -217,18 +217,28 @@ exports.findAllSearchAll = (req, res) => {
     ReferralView.findAll({
         attributes: [
             'referralId',
-            'referralDate', 
-            'assign', 
-            'service', 
-            'approvedVisits', 
-            'apptDate', 
-            'apptTime', 
-            'claimant', 
+            'referralDate',
+            'assign',
+            'service',
+            'approvedVisits',
+            'apptDate',
+            'apptTime',
+            'claimant',
             'claimNumber',
-            'claimantBirthDate', 
-            'therapist', 
+            'claimantBirthDate',
+            'employer',
+            'therapist',
+            'therapistAddress',
+            'therapistSuite',
+            'therapistCity',
+            'therapistState',
+            'therapistZip',
+            'therapistPhone',
+            'therapistFax',
+            'therapistBeaver',
             'adjuster',
             'adjusterClient',
+            'adjusterBeaver',
             'casemanager',
             'referralStatus',
             'ptStatus',
@@ -393,15 +403,79 @@ exports.findAllReferralDropdown = (req, res) => {
             'service', 
             'claimant', 
             'claimNumber',
-            'claimantBirthDate', 
+            'claimantBirthDate',
+            'referralStatus',
             'ptStatus',
             'billingStatus',
-            'bodyPart'
+            'bodyPart',
+            'apptDate',
+            'apptTime'
         ],
         where: {
             billingStatus: {
                 [Op.ne]: 'Complete'
             }
+        }
+    })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving referrals."
+      });
+    });
+};
+
+// Find all referral calendar
+exports.findAllReferralCalendar = (req, res) => {
+    ReferralView.findAll({
+        attributes: [
+            'referralId',
+            'assign', 
+            'service', 
+            'claimant', 
+            'claimNumber',
+            'claimantBirthDate',
+            'referralStatus',
+            'ptStatus',
+            'billingStatus',
+            'bodyPart',
+            'apptDate',
+            'apptTime',
+            'referralDate',
+            'therapistState'
+        ]
+    })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving referrals."
+      });
+    });
+};
+
+// Find all referrals tasks
+exports.findAllReferralsTasks = (req, res) => {
+    ReferralView.findAll({
+        attributes: [
+            'referralId',
+            'assign', 
+            'service', 
+            'ptStatus',
+            'billingStatus',
+        ],
+        where: {
+          [Op.and]: {
+            ptStatus: 'Active',
+            service: {
+              [Op.substring]: 'DPT'
+            }
+          },
         }
     })
     .then(data => {

@@ -64,7 +64,8 @@ exports.findAllDropDown = (req, res) => {
             'firstName',
             'lastName',
             'clientId',
-            'client'
+            'client',
+            'adjusterBeaver'
         ],
         where: {
             status: {

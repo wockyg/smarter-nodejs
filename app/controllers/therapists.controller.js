@@ -76,7 +76,9 @@ exports.create = (req, res) => {
     doNotUse: req.body.doNotUse,
     doNotUseReason: req.body.doNotUseReason,
     notes: req.body.notes,
-    ptProfile: req.body.ptProfile
+    ptProfile: req.body.ptProfile,
+    lat: req.body.lat,
+    lon: req.body.lon
     
   };
 
@@ -125,7 +127,9 @@ exports.findAllDropDown = (req, res) => {
             'zip',
             'phone',
             'phoneExt',
-            'fax'
+            'fax',
+            'lat',
+            'lon'
         ],
         where: {
             doNotUse: {
@@ -176,7 +180,11 @@ exports.findAllSearchAll = (req, res) => {
             'wcwhAdditionalHour',
             'wcwhAgreement',
             'wcwhAgreementStatus',
-            'wcwhAgreementTimestamp'
+            'wcwhAgreementTimestamp',
+            'doNotUse',
+            'doNotUseReason',
+            'lat',
+            'lon'
         ]
     })
         .then(data => {

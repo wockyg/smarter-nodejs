@@ -1,65 +1,62 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('users', {
-    userId: {
+  return sequelize.define('d1500Rows', {
+    rowId: {
+      autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    initials: {
-      type: DataTypes.STRING(50),
+    hcfaId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: 'd1500',
+        key: 'hcfaId'
+      }
     },
-    firstName: {
+    dos: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
+    },
+    pos: {
       type: DataTypes.STRING(100),
       allowNull: true
     },
-    lastName: {
+    cpt: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    mod1: {
       type: DataTypes.STRING(100),
       allowNull: true
     },
-    email: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    phone: {
-      type: DataTypes.STRING(50),
-      allowNull: true
-    },
-    status: {
+    mod2: {
       type: DataTypes.STRING(100),
       allowNull: true
     },
-    role: {
+    mod3: {
       type: DataTypes.STRING(100),
       allowNull: true
     },
-    schPermissions: {
-      type: DataTypes.BOOLEAN,
+    diag: {
+      type: DataTypes.STRING(100),
       allowNull: true
     },
-    billPermissions: {
-      type: DataTypes.BOOLEAN,
+    mod4: {
+      type: DataTypes.STRING(100),
       allowNull: true
     },
-    d1500Permissions: {
-      type: DataTypes.BOOLEAN,
+    charges: {
+      type: DataTypes.DECIMAL(10,2),
       allowNull: true
     },
-    rrPermissions: {
-      type: DataTypes.BOOLEAN,
+    units: {
+      type: DataTypes.STRING(100),
       allowNull: true
     },
-    ptoPermissions: {
-      type: DataTypes.BOOLEAN,
-      allowNull: true
-    },
-    lastLogin: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    lastLogout: {
-      type: DataTypes.DATE,
+    provider_npi: {
+      type: DataTypes.INTEGER,
       allowNull: true
     },
     dateAdded: {
@@ -68,7 +65,7 @@ module.exports = function(sequelize, DataTypes) {
     }
   }, {
     sequelize,
-    tableName: 'users',
+    tableName: 'd1500Rows',
     timestamps: true,
     updatedAt: false,
     createdAt: 'dateAdded',
@@ -78,7 +75,14 @@ module.exports = function(sequelize, DataTypes) {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "userId" },
+          { name: "rowId" },
+        ]
+      },
+      {
+        name: "d1500Rows_FK",
+        using: "BTREE",
+        fields: [
+          { name: "hcfaId" },
         ]
       },
     ]
