@@ -73,8 +73,8 @@ exports.create = (req, res) => {
     dpt_wh: req.body.dpt_wh,
     dpt_wc: req.body.dpt_wc,
     dpt_th: req.body.dpt_th,
-    doNotUse: req.body.doNotUse,
-    doNotUseReason: req.body.doNotUseReason,
+    doNotUseDPT: req.body.doNotUseDPT,
+    doNotUseDPTReason: req.body.doNotUseDPTReason,
     notes: req.body.notes,
     ptProfile: req.body.ptProfile,
     lat: req.body.lat,
@@ -132,7 +132,7 @@ exports.findAllDropDown = (req, res) => {
             'lon'
         ],
         where: {
-            doNotUse: {
+            doNotUseDPT: {
                 [Op.is]: null
             }
         }
@@ -181,8 +181,8 @@ exports.findAllSearchAll = (req, res) => {
             'wcwhAgreement',
             'wcwhAgreementStatus',
             'wcwhAgreementTimestamp',
-            'doNotUse',
-            'doNotUseReason',
+            'doNotUseDPT',
+            'doNotUseDPTReason',
             'lat',
             'lon'
         ]

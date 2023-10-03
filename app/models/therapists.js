@@ -318,11 +318,35 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(50),
       allowNull: true
     },
-    doNotUse: {
+    doNotUseDPT: {
       type: DataTypes.STRING(50),
       allowNull: true
     },
-    doNotUseReason: {
+    doNotUseDPTReason: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    doNotUseFCE: {
+      type: DataTypes.STRING(50),
+      allowNull: true
+    },
+    doNotUseFCEReason: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    doNotUsePPD: {
+      type: DataTypes.STRING(50),
+      allowNull: true
+    },
+    doNotUsePPDReason: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    doNotUseWCWH: {
+      type: DataTypes.STRING(50),
+      allowNull: true
+    },
+    doNotUseWCWHReason: {
       type: DataTypes.TEXT,
       allowNull: true
     },
