@@ -352,21 +352,21 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.VIRTUAL,
       get() {
         const r = this.adjusterRate - this.facilityRate;
-        return (this.adjusterRate && this.facilityRate) ? r : null;
+        return (this.adjusterRate && this.facilityRate) ? r.toFixed(2) : null;
       }
     },
     revenue: {
       type: DataTypes.VIRTUAL,
       get() {
         const r = this.adjusterAmountPaid - this.facilityAmountPaid;
-        return (this.adjusterAmountPaid && this.facilityAmountPaid) ? r : null;
+        return (this.adjusterAmountPaid && this.facilityAmountPaid) ? r.toFixed(2) : null;
       }
     },
     discrepancy: {
       type: DataTypes.VIRTUAL,
       get() {
         const d = this.expectedRevenue - this.revenue;
-        return (this.expectedRevenue && this.revenue) ? d : null;
+        return (this.expectedRevenue && this.revenue) ? d.toFixed(2) : null;
       }
     },
     writeOff: {
