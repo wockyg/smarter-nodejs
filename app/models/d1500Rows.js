@@ -39,11 +39,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(100),
       allowNull: true
     },
-    diag: {
+    mod4: {
       type: DataTypes.STRING(100),
       allowNull: true
     },
-    mod4: {
+    diag: {
       type: DataTypes.STRING(100),
       allowNull: true
     },

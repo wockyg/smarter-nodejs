@@ -230,10 +230,22 @@ module.exports = function(sequelize, DataTypes) {
     adjusterDateDueFormula: {
       type: DataTypes.VIRTUAL,
       get() {
+
+        function padTo2Digits(num) {
+          return num.toString().padStart(2, '0');
+        }
         const d = this.dateRebilled ? new Date(this.dateRebilled) : new Date(this.d1500Sent);
         d.setDate(d.getDate() + 45);
-        return this.d1500Sent ? d : null;
-      }
+        return this.d1500Sent 
+        ? 
+        [
+          d.getFullYear(),
+          padTo2Digits(d.getMonth() + 1),
+          padTo2Digits(d.getDate()),
+        ].join('-') 
+        : 
+        null;
+            }
     },
     adjusterDateDueFormulaFormat: {
       type: DataTypes.VIRTUAL,
@@ -309,9 +321,20 @@ module.exports = function(sequelize, DataTypes) {
     facilityDateDueFormula: {
       type: DataTypes.VIRTUAL,
       get() {
+        function padTo2Digits(num) {
+          return num.toString().padStart(2, '0');
+        }
         const d = this.dos ? new Date(this.dos) : null;
         d && d.setDate(d.getDate() + 45);
-        return this.dos ? d : null;
+        return this.dos
+        ? 
+        [
+          d.getFullYear(),
+          padTo2Digits(d.getMonth() + 1),
+          padTo2Digits(d.getDate()),
+        ].join('-') 
+        : 
+        null;
       }
     },
     facilityDateDueFormulaFormat: {

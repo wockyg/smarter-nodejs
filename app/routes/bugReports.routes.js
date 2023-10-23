@@ -4,8 +4,11 @@ module.exports = app => {
 
   var router = require("express").Router();
 
+  const multer  = require('multer');
+  const upload = multer({ dest: './screenshots/' });
+
   // Create a new bugReport
-  router.post("/", bugReports.create);
+  router.post("/", upload.single('screenshot'), bugReports.create);
 
   // Retrieve all bugReports submitted by given user
   router.get("/:initials", bugReports.findAllUser);

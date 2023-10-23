@@ -49,6 +49,7 @@ exports.findAllDropDown = (req, res) => {
             'claimantId', 
             'firstName',
             'lastName',
+            'lastFirst',
             'birthDate'
         ]
     })
@@ -71,6 +72,7 @@ exports.findAllSearchAll = (req, res) => {
             'claimantId', 
             'firstName',
             'lastName',
+            'lastFirst',
             'birthDate',
             'employerId',
             'employer',

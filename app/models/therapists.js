@@ -318,6 +318,18 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(50),
       allowNull: true
     },
+    DPT_ST: {
+      type: DataTypes.STRING(50),
+      allowNull: true
+    },
+    DPT_VT: {
+      type: DataTypes.STRING(50),
+      allowNull: true
+    },
+    DPT_CHT: {
+      type: DataTypes.STRING(50),
+      allowNull: true
+    },
     doNotUseDPT: {
       type: DataTypes.STRING(50),
       allowNull: true

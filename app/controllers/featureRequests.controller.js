@@ -1,5 +1,5 @@
 const db = require("../models");
-const BugReport = db.bugReports;
+const FeatureRequest = db.featureRequests;
 const Op = db.Sequelize.Op;
 
 const fs = require('fs-extra')
@@ -8,7 +8,7 @@ const unlinkFile = util.promisify(fs.unlink)
 
 const { uploadFile } = require('../../s3')
 
-// Create and Save a new bugReport
+// Create and Save a new featureRequest
 exports.create = async (req, res) => {
 
   // upload screenshot to AWS
@@ -16,33 +16,33 @@ exports.create = async (req, res) => {
   //  console.log(result);
    result && await unlinkFile(req.file.path);
 
-  // Create new bugReport object
-  const bugReport = {
+  // Create new featureRequest object
+  const featureRequest = {
     title: req.body.title,
     description: req.body.description,
     screenshot: req.file?.filename,
     submittedBy: req.body.submittedBy, 
   };
 
-  // Save bugReport in the database
-  BugReport.create(bugReport)
+  // Save featureRequest in the database
+  FeatureRequest.create(featureRequest)
     .then(data => {
       res.send(data);
     })
     .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while creating bugReport."
+          err.message || "Some error occurred while creating featureRequest."
       });
     });
 
   
 };
 
-// Retrieve all bugReports from the database.
+// Retrieve all featureRequests from the database.
 exports.findAll = (req, res) => {
    
-    BugReport.findAll()
+    FeatureRequest.findAll()
         .then(data => {
         res.send(data);
         })
@@ -55,16 +55,16 @@ exports.findAll = (req, res) => {
   
 };
 
-// Find all bugReports for a given user
+// Find all featureRequests for a given user
 exports.findAllUser = (req, res) => {
-    BugReport.findAll({ where: { submittedBy: req.params.initials } })
+    FeatureRequest.findAll({ where: { submittedBy: req.params.initials } })
     .then(data => {
       res.send(data);
     })
     .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving bugReports for user."
+          err.message || "Some error occurred while retrieving featureRequests for user."
       });
     });
 };
@@ -90,27 +90,27 @@ exports.findAllUser = (req, res) => {
   
 // };
 
-// Update a bugReport by the id in the request
+// Update a featureRequest by the id in the request
 exports.update = (req, res) => {
     const id = req.params.id;
 
-    BugReport.update(req.body, {
-        where: { bugId: id }
+    FeatureRequest.update(req.body, {
+        where: { featureId: id }
     })
         .then(num => {
         if (num == 1) {
             res.send({
-            message: "bugReport was updated successfully."
+            message: "featureRequest was updated successfully."
             });
         } else {
             res.send({
-            message: `Cannot update bugReport with id=${id}. Maybe bugReport was not found or req.body is empty!`
+            message: `Cannot update featureRequest with id=${id}. Maybe featureRequest was not found or req.body is empty!`
             });
         }
         })
         .catch(err => {
         res.status(500).send({
-            message: "Error updating bugReport with id=" + id
+            message: "Error updating featureRequest with id=" + id
         });
         });
 };

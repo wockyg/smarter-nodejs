@@ -5,6 +5,9 @@ module.exports = app => {
   var router = require("express").Router();
 
   // Create a new d1500
+  router.post("/upload", d1500.upload);
+
+  // Create a new d1500
   router.post("/", d1500.create);
 
   // Retrieve all d1500

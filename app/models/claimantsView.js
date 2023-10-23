@@ -15,10 +15,8 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     lastFirst: {
-      type: DataTypes.VIRTUAL,
-      get() {
-        return `${this.lastName}, ${this.firstName}`;
-      }
+      type: DataTypes.STRING(255),
+      allowNull: true
     },
     employerId: {
       type: DataTypes.INTEGER,
