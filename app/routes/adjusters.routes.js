@@ -7,7 +7,7 @@ module.exports = app => {
   // Create a new adjuster
   router.post("/", adjusters.create);
 
-  // Retrieve all active adjusters
+  // Retrieve all active adjusters freom DB
   router.get("/active", adjusters.findAllActive);
 
   // Retrieve a single adjuster with id
