@@ -5,7 +5,8 @@ module.exports = app => {
   var router = require("express").Router();
 
   const multer  = require('multer');
-  const upload = multer({ dest: './screenshots/' });
+  // const upload = multer({ dest: './screenshots/' });
+  const upload = multer({ dest: require.main?.path + '/screenshots/' });
 
   // Create a new bugReport
   router.post("/", upload.single('screenshot'), bugReports.create);
