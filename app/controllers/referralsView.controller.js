@@ -411,11 +411,11 @@ exports.findAllReferralDropdown = (req, res) => {
             'apptDate',
             'apptTime'
         ],
-        where: {
-            billingStatus: {
-                [Op.ne]: 'Complete'
-            }
-        }
+        // where: {
+        //     billingStatus: {
+        //         [Op.ne]: 'Complete'
+        //     }
+        // }
     })
     .then(data => {
       res.send(data);
