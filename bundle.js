@@ -163,8 +163,6 @@ require("./app/routes/d1500View.routes")(app);
 require("./app/routes/v1500RowsView.routes")(app);
 require("./app/routes/v1500View.routes")(app);
 
-require("./app/routes/lookup_UsState.routes")(app);
-
 // authorize().then(console.log("Authorization successful")).catch(console.error);
 // authorize().then(watchFolder).catch(console.error);
 

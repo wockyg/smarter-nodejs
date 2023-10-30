@@ -12,6 +12,7 @@ const ReferralNote = db.referralNotes;
 const DptBillingVisit = db.dptBillingVisitsView;
 
 // const { ToadScheduler, SimpleIntervalJob, AsyncTask, Task } = require('toad-scheduler');
+// const { ToadScheduler, SimpleIntervalJob, AsyncTask, Task } = require('toad-scheduler');
 
 // const fs = require('fs').promises;
 // const path = require('path');
@@ -147,6 +148,8 @@ require("./app/routes/d1500.routes")(app);
 require("./app/routes/d1500Rows.routes")(app);
 require("./app/routes/v1500.routes")(app);
 require("./app/routes/v1500Rows.routes")(app);
+require("./app/routes/v1500.routes")(app);
+require("./app/routes/v1500Rows.routes")(app);
 require("./app/routes/bugReports.routes")(app);
 require("./app/routes/featureRequests.routes")(app);
 
@@ -160,8 +163,6 @@ require("./app/routes/d1500RowsView.routes")(app);
 require("./app/routes/d1500View.routes")(app);
 require("./app/routes/v1500RowsView.routes")(app);
 require("./app/routes/v1500View.routes")(app);
-
-require("./app/routes/lookup_UsState.routes")(app);
 
 // authorize().then(console.log("Authorization successful")).catch(console.error);
 // authorize().then(watchFolder).catch(console.error);
