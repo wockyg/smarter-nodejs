@@ -19,23 +19,16 @@ exports.findAll = (req, res) => {
   
 };
 
-// Find all d1500 for a particular hcfaId
-exports.findAllD1500ForHcfa = (req, res) => {
-    D1500View.findAll({ where: { hcfaId: req.params.id } })
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving d1500's for hcfa."
-      });
-    });
-};
-
 // Find all d1500 for a particular claim
 exports.findAllD1500ForClaim = (req, res) => {
-    D1500View.findAll({ where: { referralId: req.params.id } })
+    D1500View.findAll({ 
+      where: { 
+        referralId: req.params.id,
+        dateApproved: {
+          [Op.ne]: null
+        }
+      } 
+    })
     .then(data => {
       res.send(data);
     })
@@ -43,6 +36,20 @@ exports.findAllD1500ForClaim = (req, res) => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while retrieving d1500's for claim."
+      });
+    });
+};
+
+// Find all d1500 not approved
+exports.findAllD1500NotApproved = (req, res) => {
+    D1500View.findAll({ where: { dateApproved: null, method: 'python' } })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving d1500 notApproved"
       });
     });
 };

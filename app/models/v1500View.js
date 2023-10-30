@@ -1,8 +1,7 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('d1500', {
-    hcfaId: {
-      autoIncrement: true,
+  return sequelize.define('v1500View', {
+    v1500Id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
@@ -10,21 +9,45 @@ module.exports = function(sequelize, DataTypes) {
     referralId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: 'referralsNotification',
-        key: 'referralId'
-      }
     },
-    v1500_filename: {
+    hcfaId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    dateAdded: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    d1500Approved: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    method: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    d1500_filename: {
+    claimant: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    sendFormat: {
+    claimNumber: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    service: {
       type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    adjuster: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    adjusterClient: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    original_dos: {
+      type: DataTypes.STRING(255),
       allowNull: true
     },
     physician_npi: {
@@ -91,40 +114,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(100),
       allowNull: true
     },
-    method: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    dateAdded: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
-    dateApproved: {
-      type: DataTypes.DATE,
-      allowNull: true
-    }
   }, {
     sequelize,
-    tableName: 'd1500',
-    timestamps: true,
-    updatedAt: false,
-    createdAt: 'dateAdded',
-    indexes: [
-      {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "hcfaId" },
-        ]
-      },
-      {
-        name: "d1500_FK",
-        using: "BTREE",
-        fields: [
-          { name: "referralId" },
-        ]
-      },
-    ]
+    doNotSync: true,
+    tableName: 'v1500view',
+    timestamps: false,
   });
 };

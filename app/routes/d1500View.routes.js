@@ -4,13 +4,13 @@ module.exports = app => {
 
   var router = require("express").Router();
 
-  // Retrieve all d1500Rows for a particular hcfa
-  router.get("/hcfa/:id", d1500View.findAllD1500ForHcfa);
-
-  // Retrieve all d1500Rows for a particular claim
+  // Retrieve all d1500 for a particular claim
   router.get("/claim/:id", d1500View.findAllD1500ForClaim);
 
-  // Retrieve all d1500Rows
+  // Retrieve all d1500 not approved
+  router.get("/notApproved", d1500View.findAllD1500NotApproved);
+
+  // Retrieve all d1500
   router.get("/", d1500View.findAll);
 
   app.use('/api/d1500View', router);

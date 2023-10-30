@@ -192,6 +192,27 @@ exports.findAllReportLimbo = (req, res) => {
     });
 };
 
+// Find all past appts
+exports.findAllPastAppts = (req, res) => {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    ReferralView.findAll({
+      where: { 
+        referralStatus: "Complete",
+        confirmAttend: null,
+        apptDate: {[Op.lt]: today}
+      }})
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving referrals."
+      });
+    });
+};
+
 // Find all fu/hold
 exports.findAllFollowUpHold = (req, res) => {
     ReferralView.findAll({

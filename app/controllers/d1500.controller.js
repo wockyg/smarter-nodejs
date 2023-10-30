@@ -1,8 +1,10 @@
 const db = require("../models");
 const D1500 = db.d1500;
 const ReferralView = db.referralsView;
+const Visit = db.dptBillingVisits;
 const Lookup_cpt = db.lookup_cpt;
 const D1500Rows = db.d1500Rows;
+const V1500 = db.v1500;
 const Op = db.Sequelize.Op;
 
 
@@ -13,12 +15,46 @@ exports.create = (req, res) => {
   const d1500 = {
     referralId: req.body.referralId,
     sendFormat: req.body.sendFormat,
+    dateApproved: req.body.dateApproved,
+    physician_name: req.body.physician_name,
+    physician_npi: req.body.physician_npi,
+    patient_account_no: req.body.patient_account_no,
+    diagnosis_a: req.body.diagnosis_a,
+    diagnosis_b: req.body.diagnosis_b,
+    diagnosis_c: req.body.diagnosis_c,
+    diagnosis_d: req.body.diagnosis_d,
+    diagnosis_e: req.body.diagnosis_e,
+    diagnosis_f: req.body.diagnosis_f,
+    diagnosis_g: req.body.diagnosis_g,
+    diagnosis_h: req.body.diagnosis_h,
+    diagnosis_i: req.body.diagnosis_i,
+    diagnosis_j: req.body.diagnosis_j,
+    diagnosis_k: req.body.diagnosis_k,
+    diagnosis_l: req.body.diagnosis_l,
   };
 
   // Save d1500 in the database
   D1500.create(d1500)
     .then(data => {
-      res.send(data);
+        // console.log(data.dataValues);
+        // res.send(data);
+        if (req.body.v1500Id) {
+            V1500.update({hcfaId: data.dataValues.hcfaId}, {
+                where: { v1500Id: req.body.v1500Id }
+            })
+            .then(response => {
+                res.send(data);
+            })
+            .catch(err => {
+                res.status(500).send({
+                message:
+                    err.message || "Some error occurred while updating the row."
+                });
+            });
+        }
+        else {
+            res.send(data);
+        }
     })
     .catch(err => {
       res.status(500).send({
@@ -30,124 +66,154 @@ exports.create = (req, res) => {
 };
 
 // Create and Save a new d1500 from python upload
-exports.upload = (req, res) => {
+// exports.upload = (req, res) => {
 
-    // get referralId using claimNumber
-    const claimNumber = req.body.claim_number;
-    const rows = req.body.rows;
-    ReferralView.findOne({ where: { claimNumber: claimNumber } })
-        .then(res_referral => {
-            const {data: selectedClaim} = res_referral;
-            if (selectedClaim) {
-                // Create new d1500
-                const d1500 = {
-                    method: 'python',
-                    referralId: selectedClaim.referralId,
-                    physician_name: req.body.physician_name || null,
-                    physician_npi: req.body.physician_npi || null,
-                    patient_account_no: req.body.patient_account_no || null,
-                    diagnosis_a: req.body.diagnosis_a || null,
-                    diagnosis_b: req.body.diagnosis_b || null,
-                    diagnosis_c: req.body.diagnosis_c || null,
-                    diagnosis_d: req.body.diagnosis_d || null,
-                    diagnosis_e: req.body.diagnosis_e || null,
-                    diagnosis_f: req.body.diagnosis_f || null,
-                    diagnosis_g: req.body.diagnosis_g || null,
-                    diagnosis_h: req.body.diagnosis_h || null,
-                    diagnosis_i: req.body.diagnosis_i || null,
-                    diagnosis_j: req.body.diagnosis_j || null,
-                    diagnosis_k: req.body.diagnosis_k || null,
-                    diagnosis_l: req.body.diagnosis_l || null,
-                };
+//     // get referralId using claimNumber
+//     const claimNumber = req.body.claim_number;
+//     const rows = req.body.rows;
+//     const today = new Date().toISOString();
+//     ReferralView.findOne({ where: { claimNumber: claimNumber } })
+//         .then(selectedClaim => {
 
-                // Save d1500 in the database
-                D1500.create(d1500)
-                    .then(res_d1500 => {
+//             // update v1500 field in dptBillingVisits
+//             Visit.update({v1500: today}, {
+//                 where: 
+//                 { 
+//                     referralId: selectedClaim.referralId,
+//                     dos: rows[0].dos
+//                 }
+//             })
+//                 .then(num => {
 
-                        const {data: bill} = res_d1500;
+//                     const temp = rows.sort((a, b) => {
+//                                         if (a.dos === null){
+//                                             return 1;
+//                                         }
+//                                         if (b.dos === null){
+//                                             return -1;
+//                                         }
+//                                         if (a.dos === b.dos){
+//                                             return 0;
+//                                         }
+//                                         return a.dos < b.dos ? -1 : 1;
+//                                     });
 
-                        rows.forEach((row => {
-                            const values = {hcfaId: bill.hcfaId, ...row};
-                            // insert row data into DB
-                            D1500Rows.create(values)
-                            .then(res_row => {
-                                // update v1500 field in dptBillingVisits
-                                res.send(res_row);
-                            })
-                            .catch(err => {
-                                res.status(500).send({
-                                    message:
-                                    err.message || "Some error occurred while creating the row."
-                                });
-                            });
+//                     const dos_array = temp?.map(r => r.dos);
+//                     const uniqueDOS = Array.from(new Set(dos_array));
+//                     const uniqueDOSReorder = uniqueDOS.map(x => `${x.substring(5,7)}-${x.substring(8,10)}-${x.substring(0,4)}`);
+                    
+//                     // Create new d1500
+//                     const d1500 = {
+//                         method: 'python',
+//                         referralId: selectedClaim.referralId,
+//                         physician_name: req.body.physician_name || null,
+//                         physician_npi: req.body.physician_npi || null,
+//                         patient_account_no: req.body.patient_account_no || null,
+//                         diagnosis_a: req.body.diagnosis_a || null,
+//                         diagnosis_b: req.body.diagnosis_b || null,
+//                         diagnosis_c: req.body.diagnosis_c || null,
+//                         diagnosis_d: req.body.diagnosis_d || null,
+//                         diagnosis_e: req.body.diagnosis_e || null,
+//                         diagnosis_f: req.body.diagnosis_f || null,
+//                         diagnosis_g: req.body.diagnosis_g || null,
+//                         diagnosis_h: req.body.diagnosis_h || null,
+//                         diagnosis_i: req.body.diagnosis_i || null,
+//                         diagnosis_j: req.body.diagnosis_j || null,
+//                         diagnosis_k: req.body.diagnosis_k || null,
+//                         diagnosis_l: req.body.diagnosis_l || null,
+//                         d1500_filename: `${selectedClaim.claimant} ADJ DOS ${uniqueDOS[0]}${uniqueDOS.length > 1 ? `, ${uniqueDOS[1]}` : ''}${uniqueDOS.length > 2 ? `, ${uniqueDOS[2]}` : ''}${uniqueDOS.length > 3 ? `, ${uniqueDOS[3]}` : ''}${uniqueDOS.length > 4 ? `, ${uniqueDOS[4]}` : ''}${uniqueDOS.length > 5 ? `, ${uniqueDOS[5]}` : ''}.pdf`,
+//                         original_dos: `${uniqueDOS[0]}${uniqueDOS.length > 1 ? `, ${uniqueDOS[1]}` : ''}${uniqueDOS.length > 2 ? `, ${uniqueDOS[2]}` : ''}${uniqueDOS.length > 3 ? `, ${uniqueDOS[3]}` : ''}${uniqueDOS.length > 4 ? `, ${uniqueDOS[4]}` : ''}${uniqueDOS.length > 5 ? `, ${uniqueDOS[5]}` : ''}`
+//                     };
 
-                        }));
+//                     console.log(d1500.d1500_filename);
 
-                        // retrieve fee schedule for state from DB
-                        // const state = selectedClaim.jurisdiction;
+//                     // Save d1500 in the database
+//                     D1500.create(d1500)
+//                         .then(d1500 => {
+//                             // save cpt rows in database
+//                             Promise.all(
+//                                 rows.map((row => {
+//                                     const values = {hcfaId: d1500.hcfaId, ...row};
+//                                     return D1500Rows.create(values)
+//                                 }))
+//                             ).then(value => {
+//                                 res.send({message: "d1500 successfully uploaded."})
+//                             })
+//                             .catch(err => {
+//                                 res.status(500).send({
+//                                     message: "Some error occurred while creating the rows: " + err
+//                                 });
+//                             });
 
-                        // Lookup_cpt.findAll({
-                        //     attributes: [
-                        //         'Code',
-                        //         `${state}`,
-                        //     ],
-                        //     order: [['code', 'ASC']]
-                        // })
-                        // .then(res_codes => {
-                        //     const {data: codes} = res_codes;
-                        //     // insert cpt rows
-                        //     rows.forEach((row => {
-                        //         // calculate charges
-                        //         const cpt  = +row.cpt;
-                        //         const rate = codes.filter(c => c.Code === cpt)[0][state];
-                        //         const units = +row.units;
-                        //         const charges = (rate * units).toFixed(2);
-                        //         // append charges and hcfaId to payload object
-                        //         const values = {...row, charges: charges, hcfaId: bill.hcfaId};
-                        //         // const values = {hcfaId: bill.hcfaId, ...row};
-                        //         // insert row data into DB
-                        //         D1500Rows.create(values)
-                        //         .then(res_row => {
-                        //             res.send(res_row);
-                        //         })
-                        //         .catch(err => {
-                        //             res.status(500).send({
-                        //                 message:
-                        //                 err.message || "Some error occurred while creating the row."
-                        //             });
-                        //         });
+//                             // retrieve fee schedule for state from DB
+//                             // const state = selectedClaim.jurisdiction;
 
-                        //     }));
-                        //     // res.send(data);
-                        // })
-                        // .catch(err => {
-                        //     res.status(500).send({
-                        //         message:
-                        //         err.message || "Some error occurred while retrieving codes for state."
-                        //     });
-                        // });
+//                             // Lookup_cpt.findAll({
+//                             //     attributes: [
+//                             //         'Code',
+//                             //         `${state}`,
+//                             //     ],
+//                             //     order: [['code', 'ASC']]
+//                             // })
+//                             // .then(res_codes => {
+//                             //     const {data: codes} = res_codes;
+//                             //     // insert cpt rows
+//                             //     rows.forEach((row => {
+//                             //         // calculate charges
+//                             //         const cpt  = +row.cpt;
+//                             //         const rate = codes.filter(c => c.Code === cpt)[0][state];
+//                             //         const units = +row.units;
+//                             //         const charges = (rate * units).toFixed(2);
+//                             //         // append charges and hcfaId to payload object
+//                             //         const values = {...row, charges: charges, hcfaId: bill.hcfaId};
+//                             //         // const values = {hcfaId: bill.hcfaId, ...row};
+//                             //         // insert row data into DB
+//                             //         D1500Rows.create(values)
+//                             //         .then(res_row => {
+//                             //             res.send(res_row);
+//                             //         })
+//                             //         .catch(err => {
+//                             //             res.status(500).send({
+//                             //                 message:
+//                             //                 err.message || "Some error occurred while creating the row."
+//                             //             });
+//                             //         });
 
-                        // res.send(data);
-                    })
-                    .catch(err => {
-                        res.status(500).send({
-                            message:
-                            err.message || "Some error occurred while creating the d1500."
-                        });
-                    });
+//                             //     }));
+//                             //     // res.send(data);
+//                             // })
+//                             // .catch(err => {
+//                             //     res.status(500).send({
+//                             //         message:
+//                             //         err.message || "Some error occurred while retrieving codes for state."
+//                             //     });
+//                             // });
 
-            } else {
-                res.status(404).send({
-                    message: `Cannot find referral with claim# ${claimNumber}.`
-                });
-            }
-            })
-        .catch(err => {
-            res.status(500).send({
-                message: "Error retrieving referral with claim# " + claimNumber
-            });
-        });
-};
+//                             // res.send(res_d1500);
+//                         })
+//                         .catch(err => {
+//                             res.status(500).send({
+//                                 message: "Some error occurred while creating the d1500: " + err
+//                             });
+//                         });
+
+            
+//                 })
+//                 .catch(err => {
+//                 res.status(500).send({
+//                     message: "Error updating visit:" + err
+//                 });
+//                 });
+
+//             // res.send(selectedClaim);
+            
+//         })
+//         .catch(err => {
+//             res.status(500).send({
+//                 message: "Error retrieving referral with claim# " + claimNumber + ". Error: " + err
+//             });
+//         });
+// };
 
 // Retrieve all d1500s from the database.
 exports.findAll = (req, res) => {

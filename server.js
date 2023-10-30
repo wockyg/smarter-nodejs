@@ -11,7 +11,7 @@ const ReferralView = db.referralsView;
 const ReferralNote = db.referralNotes;
 const DptBillingVisit = db.dptBillingVisitsView;
 
-const { ToadScheduler, SimpleIntervalJob, AsyncTask, Task } = require('toad-scheduler');
+// const { ToadScheduler, SimpleIntervalJob, AsyncTask, Task } = require('toad-scheduler');
 
 // const fs = require('fs').promises;
 // const path = require('path');
@@ -145,7 +145,8 @@ require("./app/routes/referral_icd10.routes")(app);
 require("./app/routes/lookup_cpt.routes")(app);
 require("./app/routes/d1500.routes")(app);
 require("./app/routes/d1500Rows.routes")(app);
-require("./app/routes/d1500View.routes")(app);
+require("./app/routes/v1500.routes")(app);
+require("./app/routes/v1500Rows.routes")(app);
 require("./app/routes/bugReports.routes")(app);
 require("./app/routes/featureRequests.routes")(app);
 
@@ -155,6 +156,10 @@ require("./app/routes/claimantsView.routes")(app);
 require("./app/routes/referralsView.routes")(app);
 require("./app/routes/dptBillingVisitsView.routes")(app);
 require("./app/routes/fceppdBillingView.routes")(app);
+require("./app/routes/d1500RowsView.routes")(app);
+require("./app/routes/d1500View.routes")(app);
+require("./app/routes/v1500RowsView.routes")(app);
+require("./app/routes/v1500View.routes")(app);
 
 require("./app/routes/lookup_UsState.routes")(app);
 
@@ -614,6 +619,7 @@ require("./app/routes/lookup_UsState.routes")(app);
 // });
 
 // set port, listen for requests
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`ROLLUP Server is running on port ${PORT}.`);

@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('d1500', {
-    hcfaId: {
+  return sequelize.define('v1500', {
+    v1500Id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -15,16 +15,20 @@ module.exports = function(sequelize, DataTypes) {
         key: 'referralId'
       }
     },
+    hcfaId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'd1500',
+        key: 'hcfaId'
+      }
+    },
     v1500_filename: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
     d1500_filename: {
       type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    sendFormat: {
-      type: DataTypes.STRING(100),
       allowNull: true
     },
     physician_npi: {
@@ -99,13 +103,13 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true
     },
-    dateApproved: {
+    d1500Approved: {
       type: DataTypes.DATE,
       allowNull: true
     }
   }, {
     sequelize,
-    tableName: 'd1500',
+    tableName: 'v1500',
     timestamps: true,
     updatedAt: false,
     createdAt: 'dateAdded',
@@ -115,14 +119,21 @@ module.exports = function(sequelize, DataTypes) {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "hcfaId" },
+          { name: "v1500Id" },
         ]
       },
       {
-        name: "d1500_FK",
+        name: "v1500_FK",
         using: "BTREE",
         fields: [
           { name: "referralId" },
+        ]
+      },
+      {
+        name: "v1500_FK2",
+        using: "BTREE",
+        fields: [
+          { name: "hcfaId" },
         ]
       },
     ]

@@ -22,6 +22,9 @@ module.exports = app => {
   // Retrieve all report limbo
   router.get("/reportlimbo", referralsView.findAllReportLimbo);
 
+  // Retrieve all past appts
+  router.get("/pastAppts", referralsView.findAllPastAppts);
+
   // Retrieve all report limbo
   router.get("/followuphold", referralsView.findAllFollowUpHold);
 

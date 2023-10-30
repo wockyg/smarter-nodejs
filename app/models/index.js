@@ -39,7 +39,8 @@ db.referral_icd10 = require("./referral_icd10.js")(sequelize, Sequelize);
 db.lookup_cpt = require("./lookup_cpt.js")(sequelize, Sequelize);
 db.d1500 = require("./d1500.js")(sequelize, Sequelize);
 db.d1500Rows = require("./d1500Rows.js")(sequelize, Sequelize);
-db.d1500View = require("./d1500View.js")(sequelize, Sequelize);
+db.v1500 = require("./v1500.js")(sequelize, Sequelize);
+db.v1500Rows = require("./v1500Rows.js")(sequelize, Sequelize);
 db.bugReports = require("./bugReports.js")(sequelize, Sequelize);
 db.featureRequests = require("./featureRequests.js")(sequelize, Sequelize);
 
@@ -49,6 +50,10 @@ db.claimantsView = require("./claimantsView.js")(sequelize, Sequelize);
 db.referralsView = require("./referralsView.js")(sequelize, Sequelize);
 db.dptBillingVisitsView = require("./dptBillingVisitsView.js")(sequelize, Sequelize);
 db.fceppdBillingView = require("./fceppdBillingView.js")(sequelize, Sequelize);
+db.d1500View = require("./d1500View.js")(sequelize, Sequelize);
+db.d1500RowsView = require("./d1500RowsView.js")(sequelize, Sequelize);
+db.v1500View = require("./v1500View.js")(sequelize, Sequelize);
+db.v1500RowsView = require("./v1500RowsView.js")(sequelize, Sequelize);
 
 // db.lookup_UsState = require("./lookup_usState.js")(sequelize, Sequelize);
 

@@ -1,14 +1,10 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('d1500View', {
-    rowId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true
-    },
     hcfaId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true
     },
     referralId: {
       type: DataTypes.INTEGER,
@@ -18,54 +14,42 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(100),
       allowNull: true
     },
-    dos: {
-      type: DataTypes.DATEONLY,
-      allowNull: true
-    },
-    pos: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    cpt: {
-      type: DataTypes.INTEGER,
-      allowNull: true
-    },
-    mod1: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    mod2: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    mod3: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    diag: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    mod4: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    charges: {
-      type: DataTypes.DECIMAL(10,2),
-      allowNull: true
-    },
-    units: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    provider_npi: {
-      type: DataTypes.INTEGER,
-      allowNull: true
-    },
     dateAdded: {
       type: DataTypes.DATE,
       allowNull: true
-    }
+    },
+    dateApproved: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    method: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    claimant: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    claimNumber: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    service: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    adjuster: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    adjusterClient: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    original_dos: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
   }, {
     sequelize,
     doNotSync: true,
