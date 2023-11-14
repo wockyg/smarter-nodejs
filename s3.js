@@ -20,6 +20,8 @@ const s3 = new S3Client({region: region})
 // })
 
 async function uploadFile(file) {
+
+  console.log("attempting to upload...");
     
     const fileStream = fs.createReadStream(file.path)
 
