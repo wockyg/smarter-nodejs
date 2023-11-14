@@ -34,6 +34,9 @@ module.exports = app => {
   // Retrieve referrals that match search criteria
   router.get("/search", referralsView.searchReferrals);
 
+  // Patient Records Request report
+  router.get("/recordsRequest", referralsView.recordsRequest);
+
   // Retrieve all referral dropdown
   router.get("/dropdown", referralsView.findAllReferralDropdown);
 

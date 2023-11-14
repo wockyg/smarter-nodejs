@@ -1,6 +1,8 @@
 const db = require("../models");
 const ReferralView = db.referralsView;
+const VisitView = db.dptBillingVisitsView;
 const Op = db.Sequelize.Op;
+// const sequelize = db.sequelize;
 
 // Retrieve all referral from the database.
 exports.findAll = (req, res) => {
@@ -278,6 +280,284 @@ exports.findAllSearchAll = (req, res) => {
     });
 };
 
+// Patient Records Request report
+exports.recordsRequest = (req, res) => {
+    ReferralView.findAll({
+        attributes: [
+            'referralId',
+            'assign',
+            'service',
+            'claimant',
+            'claimNumber',
+            'claimantBirthDate',
+            'therapistPhone',
+            'therapistFax',
+            'therapistId',
+            'therapistBeaver',
+            'ptStatus',
+            'fuHoldNotes',
+            'bodyPart',
+            'rrLastLastWorked',
+            'rrLastWorked',
+            'ccWorked',
+            'rrFaxReceived',
+            'rrFaxPreference',
+            'rrFax',
+            'rrEmailPreference',
+            'rrEmail',
+            'rrPhonePreference',
+            'rrPhone',
+        ],
+        where: { 
+            service: {
+              [Op.like]: '%DPT%'
+            },
+            ptStatus: {
+              [Op.ne]: 'Discharge',
+              [Op.not]: null
+            }
+        }
+    })
+    .then(data => {
+
+      // console.log(data);
+
+      // Returns the ISO week of the date.
+      Date.prototype.getWeek = function() {
+        var date = new Date(this.getTime());
+        date.setHours(0, 0, 0, 0);
+        // Thursday in current week decides the year.
+        date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+        // January 4 is always in week 1.
+        var week1 = new Date(date.getFullYear(), 0, 4);
+        // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+        return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000
+                              - 3 + (week1.getDay() + 6) % 7) / 7);
+      }
+
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(-5,0,0,0);
+
+      const mon = new Date();
+      mon.setDate(mon.getDate() - 2);
+      mon.setHours(0,0,0,0);
+
+      const today = new Date();
+      today.setHours(-5,0,0,0);
+
+      const week = today.getWeek();
+      const monWeek = mon.getWeek();
+
+      // console.log("WEEK:", week)
+      // console.log("mon:", mon)
+      // console.log("monWeek:", monWeek)
+      // console.log("tom:", tomorrow)
+      // console.log("today:", today)
+
+      // res.send(data);
+
+      Promise.all(
+        data.map(element => {
+
+          const workedDate = new Date(element.rrLastWorked);
+          workedDate.setHours(workedDate.getHours() + 5);
+
+          return VisitView.findAll({
+                attributes: [
+                  'referralId',
+                  'dos',
+                  'dosTime',
+                  'attend',
+                  'needPN',
+                  'notesReceived'
+                ],
+                where: {
+                  referralId: element.referralId,
+                },
+                order: [['dos', 'DESC']]
+              })
+              .then(appts => {
+
+                const missingAttendance = appts.filter(a => {
+                  return a.attend === null && 
+                         a.dos !== null && 
+                         new Date(a.dos) < tomorrow
+                })
+                .map(r => {return {dos: r.dos, dosTime: r.dosTime}});
+
+                const numMissingAttendance = missingAttendance.length;
+                
+                const numFutureAppts = appts.filter(a => new Date(a.dos) > tomorrow).length;
+                
+                const pn = appts.filter(a => {
+                  return new Date(a.dos) < tomorrow && 
+                         a.dos !== null && 
+                         a.needPN !== null && 
+                         a.notesReceived !== 'Progress' && 
+                         a.notesReceived !== 'Re-Eval' && 
+                         a.notesReceived !== 'Discharge'
+                });
+
+                const needPn1 = pn.length > 0 && pn[0]?.notesReceived !== 'Progress' && pn[0]?.notesReceived !== 'Re-Eval' && pn[0]?.notesReceived !== 'Discharge';
+              
+                const needDc = element.fuHoldNotes === 'Need DC note' && element.ptStatus !== 'Active';
+
+                const lastDOS = appts.filter(a => a.dos !== null)[0].dos;
+
+                
+                const numBlankAppts = appts.filter(a => a.attend === null && a.dos !== null).length; 
+                const numBlankDOS = appts.filter(a => a.attend === null && a.dos === null).length; 
+
+                const eoa = (numBlankDOS === 0) && ((numBlankAppts === 0) || ((numBlankAppts > 0) && (appts[0].dos !== null && new Date(appts[0].dos) < tomorrow))) && !needDc;
+                
+                const needPn = needPn1 && !needDc && !eoa;
+
+                const needUca = numFutureAppts === 0 && !needDc && !eoa;
+                
+                const caughtUp = numMissingAttendance === 0 && !eoa && !needUca && !needPn && !needDc;
+
+                let worked = null;
+
+                let workedPrev = null;
+
+                if (caughtUp) {
+                  worked = "Caught Up";
+                }
+                else if (element.ccWorked !== null) {
+                   worked = "*CC";
+                }
+                else if ((element.ptStatus === "Follow-Up" || element.ptStatus === "Hold") && 
+                          element.fuHoldNotes !== "Need DC note" && 
+                          element.fuHoldNotes !== "Need Upcoming appts" && 
+                          element.fuHoldNotes !== "Pending PN") {
+
+                   worked = "FU/H";
+                }
+                else if (workedDate.getWeek() === week) {
+                  worked = element.rrLastWorked;
+                }
+
+                if (element.rrLastWorked !== null) {
+                  if (workedDate.getWeek() === week) {
+                    workedPrev = element.rrLastLastWorked
+                  }
+                  else {
+                    if (element.referralId === 6464) {
+                      console.log("worked:", workedDate);
+                      console.log("workedWeek:", workedDate.getWeek());
+                      console.log("mon:", mon);
+                      console.log("monWeek:", monWeek);
+                      console.log("today:", today);
+                      console.log("todayWeek:", week);
+                    }
+                    workedPrev = element.rrLastWorked;
+                  }
+                }
+
+                const rrFaxReceived = (worked !== null && worked !== 'FU/H' && worked !== "Caught Up" && (workedDate.getWeek() === week) && (element.rrFaxReceived !== null)) ? element.rrFaxReceived : null;
+
+                const row = {
+                  ...element.dataValues,
+                  // referralId: element.referralId,
+                  numMissingAttendance: numMissingAttendance,
+                  missingAttendance: missingAttendance,
+                  needDc: needDc,
+                  eoa: eoa,
+                  needPn: needPn,
+                  needUca: needUca,
+                  lastDOS: lastDOS,
+                  caughtUp: caughtUp,
+                  worked: worked,
+                  workedPrev: workedPrev,
+                  rrFaxReceived: rrFaxReceived
+                };
+                
+                return row;
+              });
+        })
+      )
+      .then(response => {
+        
+        res.send(response);
+      });
+      
+      // Promise.all(
+      //   data.map(element => {
+      //     return Promise.all(
+      //       [
+      //         // blank appts
+      //         VisitView.findAll({
+      //             attributes: [
+      //               'referralId',
+      //             ],
+      //             where: {
+      //               referralId: element.referralId,
+      //               attend: { [Op.is]: null },
+      //               dos: { [Op.lt]: tomorrow }
+      //             }
+      //           })
+      //           .then(blankAppts => {
+      //             return blankAppts.length;
+      //           }),
+      //           // future appts
+      //           VisitView.findAll({
+      //             attributes: [
+      //               'referralId',
+      //             ],
+      //             where: {
+      //               referralId: element.referralId,
+      //               dos: { [Op.gte]: tomorrow }
+      //             }
+      //           })
+      //           .then(futureAppts => {
+      //             return futureAppts.length;
+      //           }),
+      //           // has appt today
+      //           VisitView.findAll({
+      //             attributes: [
+      //               'referralId',
+      //             ],
+      //             where: {
+      //               referralId: element.referralId,
+      //               dos: today
+      //             }
+      //           })
+      //           .then(apptToday => {
+      //             return apptToday.length > 0;
+      //           }),
+      //           // EOA
+      //           VisitView.findAll({
+      //             attributes: [
+      //               'referralId',
+      //             ],
+      //             where: {
+      //               referralId: element.referralId,
+      //               attend: { [Op.is]: null }
+      //             }
+      //           })
+      //           .then(eoa => {
+      //             return eoa.length === 0;
+      //           })
+      //       ]
+      //     )
+        
+      //   })
+      // )
+      // .then(response => {
+        
+      //   res.send(response);
+      // });
+      
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving referrals searchall."
+      });
+    });
+};
+
 // Retrieve referrals that match search criteria
 exports.searchReferrals = (req, res) => {
     const {
@@ -467,7 +747,8 @@ exports.findAllReferralCalendar = (req, res) => {
             'apptTime',
             'referralDate',
             'therapistState'
-        ]
+        ],
+        order: [['referralId', 'DESC']]
     })
     .then(data => {
       res.send(data);

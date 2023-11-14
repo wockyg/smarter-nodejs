@@ -65,7 +65,27 @@ module.exports = function(sequelize, DataTypes) {
     dateAdded: {
       type: DataTypes.DATE,
       allowNull: true
-    }
+    },
+    history1: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    history2: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    history3: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    history4: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    history5: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
   }, {
     sequelize,
     tableName: 'users',
@@ -79,6 +99,41 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "userId" },
+        ]
+      },
+      {
+        name: "users_FK",
+        using: "BTREE",
+        fields: [
+          { name: "history1" },
+        ]
+      },
+      {
+        name: "users_FK_1",
+        using: "BTREE",
+        fields: [
+          { name: "history2" },
+        ]
+      },
+      {
+        name: "users_FK_2",
+        using: "BTREE",
+        fields: [
+          { name: "history3" },
+        ]
+      },
+      {
+        name: "users_FK_3",
+        using: "BTREE",
+        fields: [
+          { name: "history4" },
+        ]
+      },
+      {
+        name: "users_FK_4",
+        using: "BTREE",
+        fields: [
+          { name: "history5" },
         ]
       },
     ]

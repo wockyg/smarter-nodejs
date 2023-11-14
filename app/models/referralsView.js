@@ -20,7 +20,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     rrFaxReceived: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.DATEONLY,
       allowNull: true
     },
     fceId: {
@@ -312,6 +312,30 @@ module.exports = function(sequelize, DataTypes) {
     },
     therapistFax: {
       type: DataTypes.STRING(50),
+      allowNull: true
+    },
+    rrFaxPreference: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    rrFax: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    rrEmailPreference: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    rrEmail: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    rrPhonePreference: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    rrPhone: {
+      type: DataTypes.STRING(255),
       allowNull: true
     },
     therapistBeaver: {

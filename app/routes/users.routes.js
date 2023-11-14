@@ -7,17 +7,20 @@ module.exports = app => {
   // Create a new user
   router.post("/", users.create);
 
+  // Retrieve a user's referral history with initials
+  router.get("/history/:initials", users.getHistory);
+
   // Retrieve a single user with email
   router.get("/:email", users.findOne);
 
   // Retrieve all users
   router.get("/", users.findAll);
 
-  // Update an user with initials
-  router.put("/:initials", users.update);
+  // Update a user referral history with initials
+  router.put("/history/:initials", users.updateHistory);
 
-  // Delete an user with id
-  // router.delete("/:id", users.delete);
+  // Update a user with initials
+  router.put("/:initials", users.update);
 
   app.use('/api/users', router);
 };

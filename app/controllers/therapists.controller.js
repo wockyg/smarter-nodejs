@@ -132,7 +132,15 @@ exports.findAllDropDown = (req, res) => {
             'phoneExt',
             'fax',
             'lat',
-            'lon'
+            'lon',
+            'fceRate',
+            'ppdRate',
+            'dailyRate',
+            'evalRate',
+            'combinedRate',
+            'wcwhFirst2Hrs',
+            'wcwhAdditionalHour',
+
         ],
         where: {
             doNotUseDPT: {

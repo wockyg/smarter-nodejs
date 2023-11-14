@@ -55,6 +55,4 @@ db.d1500RowsView = require("./d1500RowsView.js")(sequelize, Sequelize);
 db.v1500View = require("./v1500View.js")(sequelize, Sequelize);
 db.v1500RowsView = require("./v1500RowsView.js")(sequelize, Sequelize);
 
-// db.lookup_UsState = require("./lookup_usState.js")(sequelize, Sequelize);
-
 module.exports = db;
