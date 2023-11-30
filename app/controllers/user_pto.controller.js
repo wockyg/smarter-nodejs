@@ -2,21 +2,46 @@ const db = require("../models");
 const UserPto = db.user_pto;
 const Op = db.Sequelize.Op;
 
+const emailjs = require('@emailjs/nodejs');
+
 
 // Create and Save a new pto
 exports.create = (req, res) => {
 
+  // console.log(req.body);
+
   // Create new user
   const pto = {
-    userId: req.body.userId,
+    userId: +req.body.userId,
     title: req.body.title,
     start: req.body.start,
-    end: req.body.end
   };
+
+  if (req.body.dateApproved !== 'undefined') {
+    pto.dateApproved = req.body.dateApproved;
+  }
+
+  if (req.body.end !== 'undefined') {
+    pto.end = req.body.end;
+  }
 
   // Save pto in the database
   UserPto.create(pto)
     .then(data => {
+      const params = {
+        to_email: "wmcclure@definedpt.com",
+        // cc_email: "wmcclure@definedpt.com",
+        subject: "PTO Request Submission",
+        message: "Request Submitted Successfully"
+      };
+
+      emailjs.send('service_zl67u0w', 'template_a7ve3kt', params, {publicKey: '0mive5-lH56wNnNf7', privateKey: 'T8DWBUrOBVTit5NO7UhTo'})
+              .then((res) => {
+                console.log(res.status, res.text);
+                console.log(params);
+              }, (err) => {
+                console.log(err.text);
+      });
       res.send(data);
     })
     .catch(err => {
@@ -26,22 +51,6 @@ exports.create = (req, res) => {
       });
     });
 
-  
-};
-
-// Retrieve all pto from the database.
-exports.findAll = (req, res) => {
-   
-    UserPto.findAll()
-        .then(data => {
-        res.send(data);
-        })
-        .catch(err => {
-        res.status(500).send({
-            message:
-            err.message || "Some error occurred while retrieving pto."
-        });
-        });
   
 };
 
@@ -59,73 +68,83 @@ exports.findAllUser = (req, res) => {
     });
 };
 
-// Find a single user with an id
-// exports.findOne = (req, res) => {
-//     const id = req.params.id;
-//     User.findByPk(id)
-//         .then(data => {
-//         if (data) {
-//             res.send(data);
-//         } else {
-//             res.status(404).send({
-//             message: `Cannot find user with id=${id}.`
-//             });
-//         }
-//         })
-//         .catch(err => {
-//         res.status(500).send({
-//             message: "Error retrieving user with id=" + id
-//         });
-//         });
+// Retrieve all pto from the database.
+exports.findAll = (req, res) => {
+    UserPto.findAll()
+        .then(data => {
+        res.send(data);
+        })
+        .catch(err => {
+        res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving pto."
+        });
+        });
   
-// };
+};
 
-// Update a user by the id in the request
-// exports.update = (req, res) => {
-//     const initials = req.params.initials;
+// Update a pto by the id in the request
+exports.update = (req, res) => {
+    const id = req.params.id;
 
-//     User.update(req.body, {
-//         where: { initials: initials }
-//     })
-//         .then(num => {
-//         if (num == 1) {
-//             res.send({
-//             message: "user was updated successfully."
-//             });
-//         } else {
-//             res.send({
-//             message: `Cannot update user with id=${initials}. Maybe user was not found or req.body is empty!`
-//             });
-//         }
-//         })
-//         .catch(err => {
-//         res.status(500).send({
-//             message: "Error updating user with id=" + initials
-//         });
-//         });
-// };
+    UserPto.update(req.body, {
+        where: { ptoId: id }
+    })
+        .then(num => {
+        if (num == 1) {
+            if (req.params.dateApproved) {
+              const params = {
+                to_email: "wmcclure@definedpt.com",
+                // cc_email: "wmcclure@definedpt.com",
+                subject: "PTO Request Approved",
+                message: "Request Approved"
+              };
 
-// Delete an client with the specified id in the request
-// exports.delete = (req, res) => {
-//     const id = req.params.id;
+              emailjs.send('service_zl67u0w', 'template_a7ve3kt', params, {publicKey: '0mive5-lH56wNnNf7', privateKey: 'T8DWBUrOBVTit5NO7UhTo'})
+                      .then((res) => {
+                        console.log(res.status, res.text);
+                        console.log(params);
+                      }, (err) => {
+                        console.log(err.text);
+              });
+            }
+            res.send({
+            message: "pto was updated successfully."
+            });
+        } else {
+            res.send({
+            message: `Cannot update pto with id=${id}. Maybe pto was not found or req.body is empty!`
+            });
+        }
+        })
+        .catch(err => {
+        res.status(500).send({
+            message: "Error updating pto with id=" + id
+        });
+        });
+};
 
-//     User.destroy({
-//         where: { initials: id }
-//     })
-//         .then(num => {
-//         if (num == 1) {
-//             res.send({
-//             message: "user was deleted successfully!"
-//             });
-//         } else {
-//             res.send({
-//             message: `Cannot delete user with id=${id}. Maybe user was not found!`
-//             });
-//         }
-//         })
-//         .catch(err => {
-//         res.status(500).send({
-//             message: "Error deleting user with id=" + id
-//         });
-//         });
-// };
+// Delete a pto with the specified id in the request
+exports.delete = (req, res) => {
+    const id = req.params.id;
+
+    UserPto.destroy({
+        where: { ptoId: id }
+    })
+        .then(num => {
+        if (num == 1) {
+            res.send({
+            message: "pto was deleted successfully!"
+            });
+        } else {
+            res.send({
+            message: `Cannot delete pto with id=${id}. Maybe pto was not found!`
+            });
+        }
+        })
+        .catch(err => {
+        res.status(500).send({
+            message: "Error deleting pto with id=" + id
+        });
+        });
+};

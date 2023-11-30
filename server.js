@@ -347,9 +347,9 @@ require("./app/routes/v1500View.routes")(app);
 
 //   const date = new Date();
 //   console.log('D_CheckNotes14Days', date);
-//   // const fourteenDaysAgo = date.getDate() - 14;
-//   // date.setDate(fourteenDaysAgo);
-//   // date.setHours(0);
+//   const fourteenDaysAgo = date.getDate() - 14;
+//   date.setDate(fourteenDaysAgo);
+//   date.setHours(0);
 
 //   //query referrals
 //   ReferralView.findAll({

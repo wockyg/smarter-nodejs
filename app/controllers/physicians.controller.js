@@ -72,7 +72,8 @@ exports.findAllDropDown = (req, res) => {
             'physicianId', 
             'firstName',
             'lastName',
-            'facility'
+            'facility',
+            'npi'
         ]
     })
         .then(data => {
@@ -97,7 +98,8 @@ exports.findAllSearchAll = (req, res) => {
             'facility',
             'phone',
             'fax',
-            'email'
+            'email',
+            'npi'
         ]
     })
         .then(data => {

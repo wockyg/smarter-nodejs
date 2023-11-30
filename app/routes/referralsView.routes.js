@@ -37,11 +37,29 @@ module.exports = app => {
   // Patient Records Request report
   router.get("/recordsRequest", referralsView.recordsRequest);
 
-  // Retrieve all referral dropdown
+  // Retrieve all referrals dropdown
   router.get("/dropdown", referralsView.findAllReferralDropdown);
 
-  // Retrieve all referral calendar
+  // Retrieve all referrals calendar
   router.get("/calendar", referralsView.findAllReferralCalendar);
+
+  // Retrieve all referrals open for cc dashboard
+  router.get("/dashboard/open/:initials", referralsView.findAllOpenDashboard);
+
+  // Retrieve all referrals w/ reminders for cc dashboard
+  router.get("/dashboard/reminders/:initials", referralsView.findAllReminders);
+
+  // Retrieve all referrals w/ >14 days since last note by cc for cc dashboard
+  router.get("/dashboard/14days/:initials", referralsView.findAll14DaysSinceLastNoteCC);
+
+  // Retrieve all referrals w/ >14 days since last note for cc dashboard
+  router.get("/dashboard/14days", referralsView.findAll14DaysSinceLastNote);
+
+  // Retrieve all FCE/PPD tomorrow for cc dashboard
+  router.get("/dashboard/tomorrow/:initials", referralsView.findAllFcePpdTomorrowDashboard);
+
+  // Retrieve dashboard stats
+  router.get("/dashboard/:initials", referralsView.findAllDashboard);
 
   // Retrieve all referrals tasks
   router.get("/tasks", referralsView.findAllReferralsTasks);
