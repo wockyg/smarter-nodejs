@@ -119,7 +119,7 @@ exports.update = (req, res) => {
             });
         } else {
             res.send({
-            message: `Cannot update referral with id=${id}. Maybe referral was not found or req.body is empty!`
+            message: `0 records affected.`
             });
         }
         })

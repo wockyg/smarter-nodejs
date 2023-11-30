@@ -89,7 +89,8 @@ exports.findAllSearchAll = (req, res) => {
         attributes: [
             'employerId', 
             'name',
-            'phone'
+            'phone',
+            'state'
         ]
     })
         .then(data => {

@@ -1,5 +1,6 @@
 const db = require("../models");
 const ReferralView = db.referralsView;
+const ReferralNote = db.referralNotes;
 const VisitView = db.dptBillingVisitsView;
 const Op = db.Sequelize.Op;
 // const sequelize = db.sequelize;
@@ -250,6 +251,7 @@ exports.findAllSearchAll = (req, res) => {
             'claimNumber',
             'claimantBirthDate',
             'employer',
+            'claimantEmployerId',
             'therapist',
             'therapistAddress',
             'therapistSuite',
@@ -261,12 +263,14 @@ exports.findAllSearchAll = (req, res) => {
             'therapistBeaver',
             'adjuster',
             'adjusterClient',
+            'adjusterClientId',
             'adjusterBeaver',
             'casemanager',
             'referralStatus',
             'ptStatus',
             'billingStatus',
-            'bodyPart'
+            'bodyPart',
+            'reportToAdjuster'
         ]
     })
     .then(data => {
@@ -760,6 +764,425 @@ exports.findAllReferralCalendar = (req, res) => {
       });
     });
 };
+
+// Find all referrals w/ reminders
+exports.findAllReminders = (req, res) => {
+    ReferralView.findAll({
+        attributes: [
+            'referralId',
+            'assign', 
+            'service', 
+            'claimant', 
+            'claimNumber',
+            'bodyPart',
+            'reminderDate',
+            'reminderNote',
+        ],
+        where: {
+            reminderDate: {
+                [Op.not]: null
+            }
+        },
+        order: [['reminderDate', 'ASC']]
+    })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving reminders."
+      });
+    });
+};
+
+// Find all Open/Hold/Reschedule for CC dashboard
+exports.findAllOpenDashboard = (req, res) => {
+    ReferralView.findAll({
+        where: { 
+          assign: req.params.initials,
+            [Op.or]: [
+                {referralStatus: 'Open'},
+                {referralStatus: 'Hold'},
+                {referralStatus: 'Reschedule'},
+            ]  
+        } })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving referrals open dashboard."
+      });
+    });
+};
+
+// Find all referrals w/ reminders for CC dashboard
+exports.findAllReminders = (req, res) => {
+    ReferralView.findAll({
+        attributes: [
+            'referralId',
+            'assign', 
+            'service', 
+            'claimant', 
+            'claimNumber',
+            'bodyPart',
+            'reminderDate',
+            'reminderNote',
+        ],
+        where: {
+            assign: req.params.initials,
+            reminderDate: {
+                [Op.not]: null
+            }
+        },
+        order: [['reminderDate', 'ASC']]
+    })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving reminders."
+      });
+    });
+};
+
+// Find all 14days since last note for CC dashboard by cc
+exports.findAll14DaysSinceLastNoteCC = (req, res) => {
+
+  const date = new Date();
+  const fourteenDaysAgo = date.getDate() - 14;
+  date.setDate(fourteenDaysAgo);
+  date.setHours(0);
+
+  //query referrals
+  ReferralView.findAll({
+    attributes: [
+        'referralId',
+        'assignEmail',
+        'claimant',
+        'claimNumber',
+        'assign',
+        'bodyPart',
+        'service'
+    ],
+    where: {
+      [Op.and]: {
+        assign: req.params.initials,
+        ptStatus: {
+          [Op.and]: {
+            [Op.not]: null,
+            [Op.ne]: 'Discharge',
+          }
+        },
+        billingStatus: {
+          [Op.ne]: 'Complete'
+        },
+        service: {
+          [Op.substring]: 'DPT'
+        }
+      }
+    }
+  })
+  .then(referrals => {
+
+    console.log(referrals.length);
+
+    const resultArray = [];
+
+    Promise.all(referrals.map(r => {
+      console.log(r.assign)
+                          return ReferralNote.findAll({
+                                              attributes: [
+                                                  'noteId',
+                                                  'timestamp'
+                                              ],
+                                              where: {
+                                                referralId: r.referralId,
+                                                initials: r.assign,
+                                                // timestamp: {[Op.gt]: date}
+                                              },
+                                              order: [['timestamp', 'DESC']]
+                                            })
+                                            .then(notes => {
+
+                                                if (notes.filter(n => n.timestamp > date).length === 0) {
+                                                  // add r to the result array
+                                                  resultArray.push({...r.dataValues, lastNote: new Date(notes[0].timestamp)})
+                                                }
+                                            })
+                                            .catch(err => {
+                                              console.log(err.message || "Some error occurred while retrieving referral notes.");
+                                            });
+                          
+    }))
+    .then(result => {
+      // return result array
+      res.send(resultArray)
+    })
+    .catch(err => {
+    console.log(err.message || "Some error occurred while retrieving referral notes.");
+    });
+
+  })
+  .catch(err => {
+  console.log(err.message || "Some error occurred while retrieving referrals.");
+  });
+}
+
+// Find all 14days since last note for CC dashboard
+exports.findAll14DaysSinceLastNote = (req, res) => {
+
+  const date = new Date();
+  const fourteenDaysAgo = date.getDate() - 14;
+  date.setDate(fourteenDaysAgo);
+  date.setHours(0);
+
+  //query referrals
+  ReferralView.findAll({
+    attributes: [
+        'referralId',
+        'assignEmail',
+        'claimant',
+        'claimNumber',
+        'assign',
+        'bodyPart',
+        'service'
+    ],
+    where: {
+      [Op.and]: {
+        ptStatus: {
+          [Op.and]: {
+            [Op.not]: null,
+            [Op.ne]: 'Discharge',
+          }
+        },
+        billingStatus: {
+          [Op.ne]: 'Complete'
+        },
+        service: {
+          [Op.substring]: 'DPT'
+        }
+      }
+    }
+  })
+  .then(referrals => {
+
+    console.log(referrals.length);
+
+    const resultArray = [];
+
+    Promise.all(referrals.map(r => {
+      console.log(r.assign)
+                          return ReferralNote.findAll({
+                                              attributes: [
+                                                  'noteId',
+                                                  'timestamp'
+                                              ],
+                                              where: {
+                                                referralId: r.referralId,
+                                                initials: r.assign,
+                                                // timestamp: {[Op.gt]: date}
+                                              },
+                                              order: [['timestamp', 'DESC']]
+                                            })
+                                            .then(notes => {
+
+                                                if (notes.filter(n => n.timestamp > date).length === 0) {
+                                                  // add r to the result array
+                                                  resultArray.push({...r.dataValues, lastNote: new Date(notes[0].timestamp)})
+                                                }
+                                            })
+                                            .catch(err => {
+                                              console.log(err.message || "Some error occurred while retrieving referral notes.");
+                                            });
+                          
+    }))
+    .then(result => {
+      // return result array
+      res.send(resultArray)
+    })
+    .catch(err => {
+    console.log(err.message || "Some error occurred while retrieving referral notes.");
+    });
+
+  })
+  .catch(err => {
+  console.log(err.message || "Some error occurred while retrieving referrals.");
+  });
+}
+
+// Find all FCE/PPD tomorrow for CC dashboard
+exports.findAllFcePpdTomorrowDashboard = (req, res) => {
+
+    const twoDaysFromToday = new Date();
+    const twoDays = twoDaysFromToday.getDate() + 2;
+    twoDaysFromToday.setDate(twoDays);
+    twoDaysFromToday.setHours(0,0,0,0);
+
+    const tomorrow = new Date();
+    const oneDay = tomorrow.getDate() + 1;
+    tomorrow.setDate(oneDay);
+    tomorrow.setHours(0,0,0,0);
+
+    ReferralView.findAll({
+        where: { 
+            [Op.and]: [
+                {assign: req.params.initials},
+                {
+                    service: {
+                        [Op.notLike]: '%DPT%'
+                    }
+                },
+                {
+                    apptDate: {
+                        [Op.lt]: twoDaysFromToday.toISOString(),
+                        [Op.gte]: tomorrow.toISOString()
+                    }
+                }
+            ] 
+        }})
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving referrals."
+      });
+    });
+};
+
+// Find all fu/hold for CC dashboard
+exports.findAllFollowUpHoldDashboard = (req, res) => {
+    ReferralView.findAll({
+        where: { 
+            assign: req.params.initials,
+            [Op.or]: [
+                {ptStatus: 'Hold'},
+                {ptStatus: 'Follow-Up'}
+            ]  
+        } })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving referrals."
+      });
+    });
+};
+
+exports.findAllDashboard = (req, res) => {
+
+  Promise.all([
+    // open
+    ReferralView.findAll({
+        attributes: [
+              'referralId',
+              'assign', 
+              'referralStatus'
+        ],
+        where: { 
+            assign: req.params.initials,
+            [Op.or]: [
+                {referralStatus: 'Open'},
+                {referralStatus: 'Hold'},
+                {referralStatus: 'Reschedule'},
+            ]  
+        } }),
+    // reminders
+    ReferralView.findAll({
+        attributes: [
+            'referralId',
+            'reminderDate',
+        ],
+        where: {
+            reminderDate: {
+                [Op.not]: null
+            }
+        },
+        order: [['reminderDate', 'ASC']]
+    }),
+    // 14days
+    ReferralView.findAll({
+    attributes: [
+        'referralId',
+        'assignEmail',
+        'claimant',
+        'claimNumber',
+        'assign',
+        'bodyPart',
+        'service'
+    ],
+    where: {
+      [Op.and]: {
+        ptStatus: {
+          [Op.and]: {
+            [Op.not]: null,
+            [Op.ne]: 'Discharge',
+          }
+        },
+        billingStatus: {
+          [Op.ne]: 'Complete'
+        },
+        service: {
+          [Op.substring]: 'DPT'
+        }
+      }
+    }
+  })
+  .then(referrals => {
+
+    console.log(referrals.length);
+
+    const resultArray = [];
+
+    Promise.all(referrals.map(r => {
+      console.log(r.assign)
+                          return ReferralNote.findAll({
+                                              attributes: [
+                                                  'noteId',
+                                                  'timestamp'
+                                              ],
+                                              where: {
+                                                referralId: r.referralId,
+                                                initials: r.assign,
+                                                // timestamp: {[Op.gt]: date}
+                                              },
+                                              order: [['timestamp', 'DESC']]
+                                            })
+                                            .then(notes => {
+
+                                                if (notes.filter(n => n.timestamp > date).length === 0) {
+                                                  // add r to the result array
+                                                  resultArray.push({...r.dataValues, lastNote: new Date(notes[0].timestamp)})
+                                                }
+                                            })
+                                            .catch(err => {
+                                              console.log(err.message || "Some error occurred while retrieving referral notes.");
+                                            });
+                          
+    }))
+    .then(result => {
+      // return result array
+      res.send(resultArray)
+    })
+    .catch(err => {
+    console.log(err.message || "Some error occurred while retrieving referral notes.");
+    });
+
+  })
+
+  ]).then(result => {
+    res.send(result)
+  })
+  
+}
 
 // Find all referrals tasks
 exports.findAllReferralsTasks = (req, res) => {

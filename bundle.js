@@ -14,6 +14,7 @@ db.referralNotes;
 db.dptBillingVisitsView;
 
 // const { ToadScheduler, SimpleIntervalJob, AsyncTask, Task } = require('toad-scheduler');
+// const { ToadScheduler, SimpleIntervalJob, AsyncTask, Task } = require('toad-scheduler');
 
 // const fs = require('fs').promises;
 // const path = require('path');
@@ -147,6 +148,8 @@ require("./app/routes/referral_icd10.routes")(app);
 require("./app/routes/lookup_cpt.routes")(app);
 require("./app/routes/d1500.routes")(app);
 require("./app/routes/d1500Rows.routes")(app);
+require("./app/routes/v1500.routes")(app);
+require("./app/routes/v1500Rows.routes")(app);
 require("./app/routes/v1500.routes")(app);
 require("./app/routes/v1500Rows.routes")(app);
 require("./app/routes/bugReports.routes")(app);
@@ -346,9 +349,9 @@ require("./app/routes/v1500View.routes")(app);
 
 //   const date = new Date();
 //   console.log('D_CheckNotes14Days', date);
-//   // const fourteenDaysAgo = date.getDate() - 14;
-//   // date.setDate(fourteenDaysAgo);
-//   // date.setHours(0);
+//   const fourteenDaysAgo = date.getDate() - 14;
+//   date.setDate(fourteenDaysAgo);
+//   date.setHours(0);
 
 //   //query referrals
 //   ReferralView.findAll({

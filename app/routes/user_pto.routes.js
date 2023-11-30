@@ -4,20 +4,20 @@ module.exports = app => {
 
   var router = require("express").Router();
 
-  // Create a new user
+  // Create a new pto
   router.post("/", user_pto.create);
 
-  // Retrieve a single user with id
+  // Retrieve all pto for a given user
   router.get("/:userId", user_pto.findAllUser);
 
-  // Retrieve all users
+  // Retrieve all pto
   router.get("/", user_pto.findAll);
 
-  // Update an user with id
-  // router.put("/:initials", user_pto.update);
+  // Update a pto with id
+  router.put("/:id", user_pto.update);
 
-  // Delete an user with id
-  // router.delete("/:id", user_pto.delete);
+  // Delete a pto with id
+  router.delete("/:id", user_pto.delete);
 
   app.use('/api/pto', router);
 };

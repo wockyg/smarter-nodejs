@@ -501,7 +501,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: true
     },
-    reminderSent: {
+    reminderWorked: {
       type: DataTypes.DATEONLY,
       allowNull: true
     },

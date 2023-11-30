@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+const { QueryTypes } = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('users', {
     userId: {
@@ -85,6 +86,56 @@ module.exports = function(sequelize, DataTypes) {
     history5: {
       type: DataTypes.INTEGER,
       allowNull: true
+    },
+    address: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    city: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    state: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    zip: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    birthDate: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
+    },
+    hireDate: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
+    },
+    maxDaysPTO: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        const today = new Date();
+        const hired = new Date(this.hireDate);
+
+        let months;
+        months = (today.getFullYear() - hired.getFullYear()) * 12;
+        months -= today.getMonth();
+        months += hired.getMonth();
+
+        let days = 0;
+
+        if (months < 48) {
+          days = 10;
+        }
+        else if (months < 60) {
+          days = 15;
+        }
+        else {
+          days = 20;
+        }
+
+        return days;
+      }
     },
   }, {
     sequelize,
