@@ -58,6 +58,9 @@ module.exports = app => {
   // Retrieve all FCE/PPD tomorrow for cc dashboard
   router.get("/dashboard/tomorrow/:initials", referralsView.findAllFcePpdTomorrowDashboard);
 
+  // Retrieve all FU/Hold for cc dashboard
+  router.get("/dashboard/followuphold/:initials", referralsView.findAllFollowUpHoldDashboard);
+
   // Retrieve dashboard stats
   router.get("/dashboard/:initials", referralsView.findAllDashboard);
 
