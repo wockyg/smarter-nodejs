@@ -35,6 +35,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(100),
       allowNull: true
     },
+    admin: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
+    },
     schPermissions: {
       type: DataTypes.BOOLEAN,
       allowNull: true
@@ -100,6 +104,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     zip: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    covering: {
       type: DataTypes.STRING(100),
       allowNull: true
     },

@@ -82,15 +82,28 @@ exports.findAllComplete = (req, res) => {
 // Find all FCE/PPD tomorrow
 exports.findAllFcePpdTomorrow = (req, res) => {
 
-    const twoDaysFromToday = new Date();
-    const twoDays = twoDaysFromToday.getDate() + 2;
-    twoDaysFromToday.setDate(twoDays);
-    twoDaysFromToday.setHours(0,0,0,0);
+    const today = new Date();
+    const isFriday = today.getDay() === 5;
 
     const tomorrow = new Date();
     const oneDay = tomorrow.getDate() + 1;
     tomorrow.setDate(oneDay);
     tomorrow.setHours(0,0,0,0);
+
+    const twoDaysFromToday = new Date();
+    const twoDays = twoDaysFromToday.getDate() + 2;
+    twoDaysFromToday.setDate(twoDays);
+    twoDaysFromToday.setHours(0,0,0,0);
+
+    const threeDaysFromToday = new Date();
+    const threeDays = threeDaysFromToday.getDate() + 3;
+    threeDaysFromToday.setDate(threeDays);
+    threeDaysFromToday.setHours(0,0,0,0);
+
+    const fourDaysFromToday = new Date();
+    const fourDays = fourDaysFromToday.getDate() + 4;
+    fourDaysFromToday.setDate(fourDays);
+    fourDaysFromToday.setHours(0,0,0,0);
 
     ReferralView.findAll({
         where: { 
@@ -102,8 +115,8 @@ exports.findAllFcePpdTomorrow = (req, res) => {
                 },
                 {
                     apptDate: {
-                        [Op.lt]: twoDaysFromToday.toISOString(),
-                        [Op.gte]: tomorrow.toISOString()
+                        [Op.lt]: isFriday ? fourDaysFromToday.toISOString() : twoDaysFromToday.toISOString(),
+                        [Op.gte]: isFriday ? threeDaysFromToday.toISOString() : tomorrow.toISOString()
                     }
                 }
             ] 
@@ -798,14 +811,27 @@ exports.findAllReminders = (req, res) => {
 
 // Find all Open/Hold/Reschedule for CC dashboard
 exports.findAllOpenDashboard = (req, res) => {
+  
+    const initials1 = req.params.initials.slice(0,2);
+    const initials2 = req.params.initials.slice(2,4) || '';
+
+    // console.log(initials1);
+    // console.log(initials2);
+  
     ReferralView.findAll({
-        where: { 
-          assign: req.params.initials,
-            [Op.or]: [
-                {referralStatus: 'Open'},
-                {referralStatus: 'Hold'},
-                {referralStatus: 'Reschedule'},
-            ]  
+        where: {
+          [Op.and]: [
+            {[Op.or]: [
+            {assign: initials1},
+            {assign: initials2},
+            ]},
+            {[Op.or]: [
+              {referralStatus: 'Open'},
+              {referralStatus: 'Hold'},
+              {referralStatus: 'Reschedule'},
+          ] }
+          ]
+           
         } })
     .then(data => {
       res.send(data);
@@ -818,8 +844,12 @@ exports.findAllOpenDashboard = (req, res) => {
     });
 };
 
-// Find all referrals w/ reminders for CC dashboard
-exports.findAllReminders = (req, res) => {
+// Find referrals w/ reminders for CC dashboard by CC
+exports.findAllRemindersCC = (req, res) => {
+
+    const initials1 = req.params.initials.slice(0,2);
+    const initials2 = req.params.initials.slice(2,4) || '';
+
     ReferralView.findAll({
         attributes: [
             'referralId',
@@ -832,7 +862,42 @@ exports.findAllReminders = (req, res) => {
             'reminderNote',
         ],
         where: {
-            assign: req.params.initials,
+            [Op.or]: [
+              {assign: initials1},
+              {assign: initials2},
+            ],
+            reminderDate: {
+                [Op.not]: null
+            }
+        },
+        order: [['reminderDate', 'ASC']]
+    })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving reminders."
+      });
+    });
+};
+
+// Find all referrals w/ reminders for CC dashboard
+exports.findAllReminders = (req, res) => {
+
+    ReferralView.findAll({
+        attributes: [
+            'referralId',
+            'assign', 
+            'service', 
+            'claimant', 
+            'claimNumber',
+            'bodyPart',
+            'reminderDate',
+            'reminderNote',
+        ],
+        where: {
             reminderDate: {
                 [Op.not]: null
             }
@@ -853,6 +918,9 @@ exports.findAllReminders = (req, res) => {
 // Find all 14days since last note for CC dashboard by cc
 exports.findAll14DaysSinceLastNoteCC = (req, res) => {
 
+  const initials1 = req.params.initials.slice(0,2);
+  const initials2 = req.params.initials.slice(2,4) || '';
+
   const date = new Date();
   const fourteenDaysAgo = date.getDate() - 14;
   date.setDate(fourteenDaysAgo);
@@ -871,7 +939,10 @@ exports.findAll14DaysSinceLastNoteCC = (req, res) => {
     ],
     where: {
       [Op.and]: {
-        assign: req.params.initials,
+        [Op.or]: [
+          {assign: initials1},
+          {assign: initials2}
+        ],
         ptStatus: {
           [Op.and]: {
             [Op.not]: null,
@@ -892,9 +963,10 @@ exports.findAll14DaysSinceLastNoteCC = (req, res) => {
     console.log(referrals.length);
 
     const resultArray = [];
+    const elseArray = [];
 
     Promise.all(referrals.map(r => {
-      console.log(r.assign)
+                          // console.log(r.assign);
                           return ReferralNote.findAll({
                                               attributes: [
                                                   'noteId',
@@ -913,6 +985,9 @@ exports.findAll14DaysSinceLastNoteCC = (req, res) => {
                                                   // add r to the result array
                                                   resultArray.push({...r.dataValues, lastNote: new Date(notes[0].timestamp)})
                                                 }
+                                                else {
+                                                  elseArray.push({...r.dataValues, lastNote: new Date(notes[0].timestamp)})
+                                                }
                                             })
                                             .catch(err => {
                                               console.log(err.message || "Some error occurred while retrieving referral notes.");
@@ -920,7 +995,8 @@ exports.findAll14DaysSinceLastNoteCC = (req, res) => {
                           
     }))
     .then(result => {
-      // return result array
+      // console.log("result:", resultArray.length);
+      // console.log("else:", elseArray.length);
       res.send(resultArray)
     })
     .catch(err => {
@@ -1018,20 +1094,39 @@ exports.findAll14DaysSinceLastNote = (req, res) => {
 // Find all FCE/PPD tomorrow for CC dashboard
 exports.findAllFcePpdTomorrowDashboard = (req, res) => {
 
-    const twoDaysFromToday = new Date();
-    const twoDays = twoDaysFromToday.getDate() + 2;
-    twoDaysFromToday.setDate(twoDays);
-    twoDaysFromToday.setHours(0,0,0,0);
+    const initials1 = req.params.initials.slice(0,2);
+    const initials2 = req.params.initials.slice(2,4) || '';
+
+    const today = new Date();
+    const isFriday = today.getDay() === 5;
 
     const tomorrow = new Date();
     const oneDay = tomorrow.getDate() + 1;
     tomorrow.setDate(oneDay);
     tomorrow.setHours(0,0,0,0);
 
+    const twoDaysFromToday = new Date();
+    const twoDays = twoDaysFromToday.getDate() + 2;
+    twoDaysFromToday.setDate(twoDays);
+    twoDaysFromToday.setHours(0,0,0,0);
+
+    const threeDaysFromToday = new Date();
+    const threeDays = threeDaysFromToday.getDate() + 3;
+    threeDaysFromToday.setDate(threeDays);
+    threeDaysFromToday.setHours(0,0,0,0);
+
+    const fourDaysFromToday = new Date();
+    const fourDays = fourDaysFromToday.getDate() + 4;
+    fourDaysFromToday.setDate(fourDays);
+    fourDaysFromToday.setHours(0,0,0,0);
+
     ReferralView.findAll({
         where: { 
             [Op.and]: [
-                {assign: req.params.initials},
+                {[Op.or]: [
+                  {assign: initials1},
+                  {assign: initials2}
+                ]},
                 {
                     service: {
                         [Op.notLike]: '%DPT%'
@@ -1039,8 +1134,8 @@ exports.findAllFcePpdTomorrowDashboard = (req, res) => {
                 },
                 {
                     apptDate: {
-                        [Op.lt]: twoDaysFromToday.toISOString(),
-                        [Op.gte]: tomorrow.toISOString()
+                        [Op.lt]: isFriday ? fourDaysFromToday.toISOString() : twoDaysFromToday.toISOString(),
+                        [Op.gte]: isFriday ? threeDaysFromToday.toISOString() : tomorrow.toISOString()
                     }
                 }
             ] 
@@ -1056,15 +1151,73 @@ exports.findAllFcePpdTomorrowDashboard = (req, res) => {
     });
 };
 
-// Find all fu/hold for CC dashboard
-exports.findAllFollowUpHoldDashboard = (req, res) => {
+// Find all FCE/PPD next week for CC dashboard
+exports.findAllFcePpdNextWeekDashboard = (req, res) => {
+
+    const initials1 = req.params.initials.slice(0,2);
+    const initials2 = req.params.initials.slice(2,4) || '';
+
+    const getWeekNumber = (date) => {
+      const currentDate = date ? new Date(date) : new Date();
+      const year = currentDate.getFullYear();
+      const startDate = new Date(year, 0, 1);
+      const days = Math.floor(((currentDate - startDate) / (24 * 60 * 60 * 1000)) + 1);
+      return Math.ceil(days / 7);
+    };
+
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const startDate = new Date(year, 0, 1);
+    const days = Math.floor(((currentDate - startDate) / (24 * 60 * 60 * 1000)) + 1);
+    const currentWeekNumber = Math.ceil(days / 7);
+
+    const today = new Date();
+
     ReferralView.findAll({
         where: { 
-            assign: req.params.initials,
-            [Op.or]: [
+          [Op.or]: [
+            {assign: initials1},
+            {assign: initials2}
+          ],
+          service: {[Op.notLike]: '%DPT%'},
+          referralStatus: "Complete",
+          ptStatus: null
+        }})
+    .then(data => {
+      const filtered = data.filter(d => getWeekNumber(d.apptDate) === (currentWeekNumber + 1))
+      // console.log("filtered:", filtered.length)
+      // console.log("weekNumber:", getWeekNumber())
+      res.send(filtered);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving referrals."
+      });
+    });
+};
+
+// Find all fu/hold for CC dashboard
+exports.findAllFollowUpHoldDashboard = (req, res) => {
+
+    const initials1 = req.params.initials.slice(0,2);
+    const initials2 = req.params.initials.slice(2,4) || '';
+
+    console.log(initials1);
+
+    ReferralView.findAll({
+        where: { 
+          [Op.and] : [
+            {[Op.or]: [
+                {assign: initials1},
+                {assign: initials2}
+            ]},
+            {[Op.or]: [
                 {ptStatus: 'Hold'},
                 {ptStatus: 'Follow-Up'}
-            ]  
+            ]}
+          ]
+            
         } })
     .then(data => {
       res.send(data);

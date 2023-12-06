@@ -47,16 +47,22 @@ module.exports = app => {
   router.get("/dashboard/open/:initials", referralsView.findAllOpenDashboard);
 
   // Retrieve all referrals w/ reminders for cc dashboard
-  router.get("/dashboard/reminders/:initials", referralsView.findAllReminders);
+  router.get("/dashboard/reminders/:initials", referralsView.findAllRemindersCC);
+
+  // Retrieve all referrals w/ reminders for cc dashboard
+  router.get("/dashboard/reminders/", referralsView.findAllReminders);
 
   // Retrieve all referrals w/ >14 days since last note by cc for cc dashboard
   router.get("/dashboard/14days/:initials", referralsView.findAll14DaysSinceLastNoteCC);
 
-  // Retrieve all referrals w/ >14 days since last note for cc dashboard
+  // Retrieve all referrals w/ >14 days since last note all for cc dashboard
   router.get("/dashboard/14days", referralsView.findAll14DaysSinceLastNote);
 
   // Retrieve all FCE/PPD tomorrow for cc dashboard
   router.get("/dashboard/tomorrow/:initials", referralsView.findAllFcePpdTomorrowDashboard);
+
+  // Retrieve all FCE/PPD next week for cc dashboard
+  router.get("/dashboard/nextweek/:initials", referralsView.findAllFcePpdNextWeekDashboard);
 
   // Retrieve all FU/Hold for cc dashboard
   router.get("/dashboard/followuphold/:initials", referralsView.findAllFollowUpHoldDashboard);

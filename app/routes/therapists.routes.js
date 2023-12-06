@@ -10,6 +10,9 @@ module.exports = app => {
   // Retrieve all therapists searchall
   router.get("/searchall", therapists.findAllSearchAll);
 
+  // Retrieve all therapists searchall
+  router.get("/addresses", therapists.findAllAddresses);
+
   // Retrieve all therapists dropdown
   router.get("/dropdown", therapists.findAllDropDown);
 

@@ -154,6 +154,7 @@ require("./app/routes/v1500.routes")(app);
 require("./app/routes/v1500Rows.routes")(app);
 require("./app/routes/bugReports.routes")(app);
 require("./app/routes/featureRequests.routes")(app);
+require("./app/routes/timestamps.routes")(app);
 
 require("./app/routes/adjustersView.routes")(app);
 require("./app/routes/casemanagersView.routes")(app);
