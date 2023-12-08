@@ -85,7 +85,6 @@ exports.findAllAdjusterPastDue = (req, res) => {
     d.setDate(d.getDate() - 45);
     VisitView.findAll({
       where: {
-        referralId: 5441,
         adjusterDatePaid: null,
         attend: 'Yes',
         d1500Sent: {
@@ -111,7 +110,6 @@ exports.findAllFacilityPastDue = (req, res) => {
     d.setDate(d.getDate() - 45);
     VisitView.findAll({
       where: {
-        referralId: 5441,
         facilityDatePaid: null,
         attend: 'Yes',
         dos: {
