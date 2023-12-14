@@ -22,9 +22,33 @@ module.exports = function(sequelize, DataTypes) {
     timestampFormat: {
       type: DataTypes.VIRTUAL,
       get() {
+
+        let dstShift;
+
+        Date.prototype.stdTimezoneOffset = function () {
+          var jan = new Date(this.getFullYear(), 0, 1);
+          var jul = new Date(this.getFullYear(), 6, 1);
+          return Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+        }
+
+        Date.prototype.isDstObserved = function () {
+          return this.getTimezoneOffset() < this.stdTimezoneOffset();
+        }
+
+        var testDate = new Date(this.timestamp);
+        if (testDate.isDstObserved()) { 
+          dstShift = 4;
+        }
+        else {
+          dstShift = 5;
+        }
         const d = new Date(this.timestamp);
-        const hours = d.getHours() > 12 ? d.getHours() % 12 : d.getHours();
-        const ampm = d.getHours() > 12 ? 'PM' : 'AM';
+        console.log(d);
+        console.log(d.getHours());
+        console.log(d.getUTCHours() - dstShift);
+        const hoursShifted = d.getUTCHours() - dstShift
+        const hours = hoursShifted > 12 ? hoursShifted % 12 : hoursShifted;
+        const ampm = hoursShifted > 12 ? 'PM' : 'AM';
         const minutes = d.getMinutes() < 10 ? `0${d.getMinutes()}` : d.getMinutes();
         return this.timestamp ? `${d.getUTCMonth()+1}/${d.getUTCDate()}/${d.getUTCFullYear()} ${hours}:${minutes} ${ampm}` : null;
       }
