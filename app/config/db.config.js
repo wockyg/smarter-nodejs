@@ -4,7 +4,7 @@ module.exports = {
   PASSWORD: process.env.PASSWORD,
   DB: process.env.DB,
   dialect: "mysql",
-  timezone: "-04:00",
+  timezone: "-10:00",
   pool: {
     max: 5,
     min: 0,
