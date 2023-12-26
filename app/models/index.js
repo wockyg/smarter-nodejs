@@ -44,6 +44,7 @@ db.v1500Rows = require("./v1500Rows.js")(sequelize, Sequelize);
 db.bugReports = require("./bugReports.js")(sequelize, Sequelize);
 db.featureRequests = require("./featureRequests.js")(sequelize, Sequelize);
 db.timestamps = require("./timestamps.js")(sequelize, Sequelize);
+db.rrWeeklyLogs = require("./rrWeeklyLogs.js")(sequelize, Sequelize);
 
 db.adjustersView = require("./adjustersView.js")(sequelize, Sequelize);
 db.casemanagersView = require("./casemanagersView.js")(sequelize, Sequelize);

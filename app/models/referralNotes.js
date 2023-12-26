@@ -43,9 +43,9 @@ module.exports = function(sequelize, DataTypes) {
           dstShift = 5;
         }
         const d = new Date(this.timestamp);
-        console.log(d);
-        console.log(d.getHours());
-        console.log(d.getUTCHours() - dstShift);
+        // console.log(d);
+        // console.log(d.getHours());
+        // console.log(d.getUTCHours() - dstShift);
         const hoursShifted = d.getUTCHours() - dstShift
         const hours = hoursShifted > 12 ? hoursShifted % 12 : hoursShifted;
         const ampm = hoursShifted > 12 ? 'PM' : 'AM';

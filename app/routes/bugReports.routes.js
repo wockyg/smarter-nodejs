@@ -11,16 +11,19 @@ module.exports = app => {
   // Create a new bugReport
   router.post("/", upload.single('screenshot'), bugReports.create);
 
+  // Retrieve all unfixed bugReports
+  router.get("/unfixed", bugReports.findAllUnfixed);
+
   // Retrieve all bugReports submitted by given user
   router.get("/:initials", bugReports.findAllUser);
 
-  // Retrieve all users
+  // Retrieve all bugReports
   router.get("/", bugReports.findAll);
 
-  // Update an user with id
+  // Update an bugReport with id
   router.put("/:id", bugReports.update);
 
-  // Delete an user with id
+  // Delete an bugReport with id
   // router.delete("/:id", user_pto.delete);
 
   app.use('/api/bugReports', router);

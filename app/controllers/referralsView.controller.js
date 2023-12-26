@@ -74,7 +74,22 @@ exports.findAllComplete = (req, res) => {
     .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving referrals."
+          err.message || "Some error occurred while retrieving complete referrals."
+      });
+    });
+};
+
+// Find all active patients
+exports.findAllActive = (req, res) => {
+    ReferralView.findAll({
+        where: { ptStatus: 'Active' } })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving active patients."
       });
     });
 };
@@ -460,14 +475,14 @@ exports.recordsRequest = (req, res) => {
                     workedPrev = element.rrLastLastWorked
                   }
                   else {
-                    if (element.referralId === 6464) {
-                      console.log("worked:", workedDate);
-                      console.log("workedWeek:", workedDate.getWeek());
-                      console.log("mon:", mon);
-                      console.log("monWeek:", monWeek);
-                      console.log("today:", today);
-                      console.log("todayWeek:", week);
-                    }
+                    // if (element.referralId === 6464) {
+                    //   console.log("worked:", workedDate);
+                    //   console.log("workedWeek:", workedDate.getWeek());
+                    //   console.log("mon:", mon);
+                    //   console.log("monWeek:", monWeek);
+                    //   console.log("today:", today);
+                    //   console.log("todayWeek:", week);
+                    // }
                     workedPrev = element.rrLastWorked;
                   }
                 }
@@ -496,81 +511,14 @@ exports.recordsRequest = (req, res) => {
       )
       .then(response => {
         
-        res.send(response);
+        res && res.send(response);
       });
-      
-      // Promise.all(
-      //   data.map(element => {
-      //     return Promise.all(
-      //       [
-      //         // blank appts
-      //         VisitView.findAll({
-      //             attributes: [
-      //               'referralId',
-      //             ],
-      //             where: {
-      //               referralId: element.referralId,
-      //               attend: { [Op.is]: null },
-      //               dos: { [Op.lt]: tomorrow }
-      //             }
-      //           })
-      //           .then(blankAppts => {
-      //             return blankAppts.length;
-      //           }),
-      //           // future appts
-      //           VisitView.findAll({
-      //             attributes: [
-      //               'referralId',
-      //             ],
-      //             where: {
-      //               referralId: element.referralId,
-      //               dos: { [Op.gte]: tomorrow }
-      //             }
-      //           })
-      //           .then(futureAppts => {
-      //             return futureAppts.length;
-      //           }),
-      //           // has appt today
-      //           VisitView.findAll({
-      //             attributes: [
-      //               'referralId',
-      //             ],
-      //             where: {
-      //               referralId: element.referralId,
-      //               dos: today
-      //             }
-      //           })
-      //           .then(apptToday => {
-      //             return apptToday.length > 0;
-      //           }),
-      //           // EOA
-      //           VisitView.findAll({
-      //             attributes: [
-      //               'referralId',
-      //             ],
-      //             where: {
-      //               referralId: element.referralId,
-      //               attend: { [Op.is]: null }
-      //             }
-      //           })
-      //           .then(eoa => {
-      //             return eoa.length === 0;
-      //           })
-      //       ]
-      //     )
-        
-      //   })
-      // )
-      // .then(response => {
-        
-      //   res.send(response);
-      // });
       
     })
     .catch(err => {
-      res.status(500).send({
+      res && res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving referrals searchall."
+          err.message || `Error occurred while retrieving rr report: ${err}`
       });
     });
 };

@@ -30,6 +30,10 @@ module.exports = function(sequelize, DataTypes) {
     screenshot: {
       type: DataTypes.STRING(255),
       allowNull: true,
+    },
+    status: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
   }, {
     sequelize,

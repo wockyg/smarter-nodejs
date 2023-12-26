@@ -55,6 +55,22 @@ exports.findAll = (req, res) => {
   
 };
 
+// Retrieve all unfixed bugReports from the database.
+exports.findAllUnfixed = (req, res) => {
+   
+    BugReport.findAll({ where: { dateFixed: null } })
+        .then(data => {
+        res.send(data);
+        })
+        .catch(err => {
+        res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving unfixed bugReports."
+        });
+        });
+  
+};
+
 // Find all bugReports for a given user
 exports.findAllUser = (req, res) => {
     BugReport.findAll({ where: { submittedBy: req.params.initials } })

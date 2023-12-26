@@ -2,16 +2,21 @@
 
 const cors = require("cors");
 const express = require("express");
-require('node-schedule');
+const schedule = require('node-schedule');
 const db = require("./app/models");
 require('@emailjs/nodejs');
-require("sequelize");
+const { Op } = require("sequelize");
 require("./app/models");
+
+const User = db.users;
+db.rrWeeklyLogs;
 
 db.referrals;
 db.referralsView;
 db.referralNotes;
 db.dptBillingVisitsView;
+
+// const referralsView = require("./app/controllers/referralsView.controller.js");
 
 // const { ToadScheduler, SimpleIntervalJob, AsyncTask, Task } = require('toad-scheduler');
 // const { ToadScheduler, SimpleIntervalJob, AsyncTask, Task } = require('toad-scheduler');
@@ -105,7 +110,6 @@ db.dptBillingVisitsView;
 //   // const files = res.data.files;
 // }
 
-
 const app = express();
 
 var corsOptions = {
@@ -194,7 +198,64 @@ require("./app/routes/v1500View.routes")(app);
 
 // const path = 'http://localhost:3000';
 
-// test CRON: '0 * * * * *'
+
+// test CRON value: '0 * * * * *' //
+
+
+// D_resetCovering Task (Daily @ 6:00AM) (0 6 * * *)
+schedule.scheduleJob('0 6 * * *', function(){
+
+  const date = new Date();
+  console.log('D_resetCovering', date);
+
+  User.update({covering: null}, {
+      where: { 
+        covering: {
+          [Op.not]: null
+        }
+      }
+  })
+  .then(num => {
+    console.log(`covering was reset successfully (${num}).`);
+  })
+  .catch(err => {
+    console.log(`Error: ${err}`);
+  });
+
+});
+
+// const rrPromise = new Promise((resolve, reject) => {
+//   referralsView.recordsRequest();
+// });
+
+// W_rrWeeklyLog Task (Fridays @ 8:00PM) (0 20 * * 5)
+// schedule.scheduleJob('0 * * * * *', function(){
+
+  // const date = new Date();
+  // console.log('W_rrWeeklyLog', date);
+
+  // pull RR endpoint
+  // referralsView.recordsRequest()
+  // .then(res => {
+  //   // add all rows to rrWeeklyLogs
+  //   Promise.all(res.map(r => {
+  //     return (
+  //       RRWeeklyLog.create({referralId: r.referralId, rrLastWorked: r.rrLastWorked, rrFaxReceived: r.rrFaxReceived})
+  //       .catch(err => {
+  //         console.log(`Error adding row to rrWeeklyLog: ${err}`);
+  //       })
+  //     );
+  //   }))
+  //   .then(result => {
+  //     console.log(`Done. ${result.length} rows successfully added to rrWeeklyLog.`);
+  //   })
+  // })
+  // .catch(err => {
+  //   console.log(`Error retrieving RR report: ${err}`);
+  // });
+// });
+
+
 
 // D_DPTFUTrigger Task (6:00AM) (0 6 * * *)
 // schedule.scheduleJob('0 6 * * *', function(){

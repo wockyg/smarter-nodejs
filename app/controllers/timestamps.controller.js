@@ -25,6 +25,26 @@ exports.findRRLastWorked = (req, res) => {
   
 };
 
+// Find ascending
+exports.findAscending = (req, res) => {
+  Timestamp.findByPk(1)
+            .then(data => {
+            if (data) {
+                res.send(data.ascending);
+            } else {
+                res.status(404).send({
+                message: `Cannot find ascending.`
+                });
+            }
+            })
+            .catch(err => {
+            res.status(500).send({
+                message: "Error retrieving ascending"
+            });
+            });
+  
+};
+
 // Update rrLastWorked
 exports.updateRRLastWorked = (req, res) => {
     Timestamp.update(req.body, {
