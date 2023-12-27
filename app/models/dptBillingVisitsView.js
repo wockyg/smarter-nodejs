@@ -403,7 +403,7 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     sequelize,
     doNotSync: true,
-    tableName: 'dptBillingVisitsview',
+    tableName: 'dptbillingvisitsview',
     timestamps: false,
   });
 };
