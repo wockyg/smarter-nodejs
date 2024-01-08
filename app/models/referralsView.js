@@ -702,6 +702,10 @@ module.exports = function(sequelize, DataTypes) {
     requestRecords: {
       type: DataTypes.STRING(50),
       allowNull: true
+    },
+    betaTest: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
     }
   }, {
     sequelize,

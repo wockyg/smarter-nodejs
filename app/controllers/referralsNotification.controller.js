@@ -45,7 +45,8 @@ exports.create = (req, res) => {
     ptNotesFromAdjuster: req.body.ptNotesFromAdjuster,
     jdFromAdjuster: req.body.jdFromAdjuster,
     mriFromAdjuster: req.body.mriFromAdjuster,
-    postOpFromAdjuster: req.body.postOpFromAdjuster
+    postOpFromAdjuster: req.body.postOpFromAdjuster,
+    betaTest: req.body.betaTest || null
     
   };
 

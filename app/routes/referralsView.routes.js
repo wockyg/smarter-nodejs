@@ -24,6 +24,9 @@ module.exports = app => {
 
   // Retrieve all past appts
   router.get("/pastAppts", referralsView.findAllPastAppts);
+  
+  // Retrieve all RR IA
+  router.get("/rria", referralsView.findAllRRIA);
 
   // Retrieve all fu/Hold
   router.get("/followuphold", referralsView.findAllFollowUpHold);
@@ -49,11 +52,17 @@ module.exports = app => {
   // Retrieve all referrals open for cc dashboard
   router.get("/dashboard/open/:initials", referralsView.findAllOpenDashboard);
 
+  // Retrieve all tracked referrals by cc for cc dashboard
+  router.get("/dashboard/tracked/:initials", referralsView.findAllTrackedCC);
+
+  // Retrieve all tracked referrals for admin dashboard
+  router.get("/dashboard/tracked", referralsView.findAllTracked);
+
   // Retrieve all referrals w/ reminders for cc dashboard
   router.get("/dashboard/reminders/:initials", referralsView.findAllRemindersCC);
 
   // Retrieve all referrals w/ reminders for cc dashboard
-  router.get("/dashboard/reminders/", referralsView.findAllReminders);
+  router.get("/dashboard/reminders", referralsView.findAllReminders);
 
   // Retrieve all referrals w/ >14 days since last note by cc for cc dashboard
   router.get("/dashboard/14days/:initials", referralsView.findAll14DaysSinceLastNoteCC);

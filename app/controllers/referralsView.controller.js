@@ -244,6 +244,35 @@ exports.findAllPastAppts = (req, res) => {
     });
 };
 
+// Find all RR IA
+exports.findAllRRIA = (req, res) => {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    ReferralView.findAll({
+      where: { 
+        [Op.or]: [
+          {[Op.and]: [
+            {referralStatus: "Complete"},
+            {confirmAttend: null},
+            {apptDate: {[Op.lt]: today}}
+          ]},
+          {[Op.and]: [
+            {confirmAttend: 'Yes'},
+            {reportReceivedDate: null}
+          ]}
+        ]
+      }})
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving rr ia."
+      });
+    });
+};
+
 // Find all fu/hold
 exports.findAllFollowUpHold = (req, res) => {
     ReferralView.findAll({
@@ -788,6 +817,86 @@ exports.findAllOpenDashboard = (req, res) => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while retrieving referrals open dashboard."
+      });
+    });
+};
+
+// Find all tracked referrals for CC dashboard by CC
+exports.findAllTrackedCC = (req, res) => {
+
+    const initials1 = req.params.initials.slice(0,2);
+    const initials2 = req.params.initials.slice(2,4) || '';
+
+    ReferralView.findAll({
+        attributes: [
+            'referralId',
+            'assign', 
+            'service', 
+            'claimant', 
+            'claimNumber',
+            'bodyPart',
+            'therapistDisplay',
+            'adjuster',
+            'adjusterClient',
+            'referralStatus',
+            'ptStatus',
+            'betaTest'
+        ],
+        where: {
+            assign: {
+              [Op.or]: [initials1, initials2]
+            },
+            ptStatus: {
+              [Op.or]: [null, "Active", "Follow-Up", "Hold"]
+            },
+            betaTest: true,
+        },
+        order: [['claimant', 'ASC']]
+    })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving tracked files."
+      });
+    });
+};
+
+// Find all tracked referrals for admin dashboard
+exports.findAllTracked = (req, res) => {
+
+    ReferralView.findAll({
+        attributes: [
+            'referralId',
+            'assign', 
+            'service', 
+            'claimant', 
+            'claimNumber',
+            'bodyPart',
+            'therapistDisplay',
+            'adjuster',
+            'adjusterClient',
+            'referralStatus',
+            'ptStatus',
+            'betaTest'
+        ],
+        where: {
+            ptStatus: {
+              [Op.or]: [null, "Active", "Follow-Up", "Hold"]
+            },
+            betaTest: true,
+        },
+        order: [['claimant', 'ASC']]
+    })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving tracked files."
       });
     });
 };
