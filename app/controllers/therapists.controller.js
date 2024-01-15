@@ -1,6 +1,13 @@
 const db = require("../models");
 const Therapist = db.therapists;
 const Op = db.Sequelize.Op;
+const { setDefaults, fromAddress, geocode, RequestType } = require("react-geocode");
+
+  setDefaults({
+    key: "AIzaSyDZTDhDWFKMSUkvPEzKEVEyNCzZh0SFTw4",
+    language: "en",
+    region: "es",
+    });
 
 
 // Create and Save a new therapist
@@ -13,89 +20,92 @@ exports.create = (req, res) => {
   //   return;
   // }
 
-  // Create new therapist
-  const therapist = {
-    name: req.body.name,
-    address: req.body.address,
-    suite: req.body.suite,
-    bldg: req.body.bldg,
-    unit: req.body.unit,
-    floor: req.body.floor,
-    city: req.body.city,
-    state: req.body.state,
-    zip: req.body.zip,
-    bulkBillingId: req.body.bulkBillingId,
-    phone: req.body.phone,
-    phoneExt: req.body.phoneExt,
-    fax: req.body.fax,
-    contact: req.body.contact,
-    contact2: req.body.contact2,
-    email: req.body.email,
-    email2: req.body.email2,
-    spanish: req.body.spanish,
-    fceTier: req.body.fceTier,
-    fceAgreement: req.body.fceAgreement,
-    fceAgreementStatus: req.body.fceAgreementStatus,
-    fceAgreementTimestamp: req.body.fceAgreementTimestamp,
-    fce: req.body.fce,
-    fceRate: req.body.fceRate,
-    ppd: req.body.ppd,
-    ppdRate: req.body.ppdRate,
-    dptAgreement: req.body.dptAgreement,
-    dptAgreementStatus: req.body.dptAgreementStatus,
-    dptAgreementTimestamp: req.body.dptAgreementTimestamp,
-    dpt: req.body.dpt,
-    dailyRate: req.body.dailyRate,
-    evalRate: req.body.evalRate,
-    combinedRate: req.body.combinedRate,
-    wcwhFirst2Hrs: req.body.wcwhFirst2Hrs,
-    wcwhAdditionalHour: req.body.wcwhAdditionalHour,
-    wcwhAgreement: req.body.wcwhAgreement,
-    wcwhAgreementStatus: req.body.wcwhAgreementStatus,
-    wcwhAgreementTimestamp: req.body.wcwhAgreementTimestamp,
-    billingContact: req.body.billingContact,
-    billingPhone: req.body.billingPhone,
-    billingPhoneExt: req.body.billingPhoneExt,
-    billingFax: req.body.billingFax,
-    billingEmail: req.body.billingEmail,
-    billingContact2: req.body.billingContact2,
-    billingPhone2: req.body.billingPhone2,
-    billingPhone2Ext: req.body.billingPhone2Ext,
-    billingFax2: req.body.billingFax2,
-    billingEmail2: req.body.billingEmail2,
-    billsMonthly: req.body.billsMonthly,
-    billingProfile: req.body.billingProfile,
-    DPT_AN: req.body.DPT_AN,
-    PPD_GL: req.body.PPD_GL,
-    DPT_AQ: req.body.DPT_AQ,
-    DPT_MT: req.body.DPT_MT,
-    DPT_OT: req.body.DPT_OT,
-    DPT_WH: req.body.DPT_WH,
-    DPT_WC: req.body.DPT_WC,
-    DPT_TH: req.body.DPT_TH,
-    DPT_ST: req.body.DPT_ST,
-    DPT_VT: req.body.DPT_VT,
-    DPT_CHT: req.body.DPT_CHT,
-    doNotUseDPT: req.body.doNotUseDPT,
-    doNotUseDPTReason: req.body.doNotUseDPTReason,
-    notes: req.body.notes,
-    ptProfile: req.body.ptProfile,
-    lat: req.body.lat,
-    lon: req.body.lon
-    
-  };
-
-  // Save therapist in the database
-  Therapist.create(therapist)
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the therapist."
-      });
-    });
+  fromAddress(`${req.body.address}, ${req.body.city}, ${req.body.state} ${req.body.zip}`)
+        .then(({ results }) => {
+            const { lat, lng } = results[0].geometry.location;
+            console.log("new therapist coordinates:", lat, lng);
+            // Create new therapist
+            const therapist = {
+                name: req.body.name,
+                address: req.body.address,
+                suite: req.body.suite,
+                bldg: req.body.bldg,
+                unit: req.body.unit,
+                floor: req.body.floor,
+                city: req.body.city,
+                state: req.body.state,
+                zip: req.body.zip,
+                lat: lat,
+                lon: lng,
+                bulkBillingId: req.body.bulkBillingId,
+                phone: req.body.phone,
+                phoneExt: req.body.phoneExt,
+                fax: req.body.fax,
+                contact: req.body.contact,
+                contact2: req.body.contact2,
+                email: req.body.email,
+                email2: req.body.email2,
+                spanish: req.body.spanish,
+                fceTier: req.body.fceTier,
+                fceAgreement: req.body.fceAgreement,
+                fceAgreementStatus: req.body.fceAgreementStatus,
+                fceAgreementTimestamp: req.body.fceAgreementTimestamp,
+                fce: req.body.fce,
+                fceRate: req.body.fceRate,
+                ppd: req.body.ppd,
+                ppdRate: req.body.ppdRate,
+                dptAgreement: req.body.dptAgreement,
+                dptAgreementStatus: req.body.dptAgreementStatus,
+                dptAgreementTimestamp: req.body.dptAgreementTimestamp,
+                dpt: req.body.dpt,
+                dailyRate: req.body.dailyRate,
+                evalRate: req.body.evalRate,
+                combinedRate: req.body.combinedRate,
+                wcwhFirst2Hrs: req.body.wcwhFirst2Hrs,
+                wcwhAdditionalHour: req.body.wcwhAdditionalHour,
+                wcwhAgreement: req.body.wcwhAgreement,
+                wcwhAgreementStatus: req.body.wcwhAgreementStatus,
+                wcwhAgreementTimestamp: req.body.wcwhAgreementTimestamp,
+                billingContact: req.body.billingContact,
+                billingPhone: req.body.billingPhone,
+                billingPhoneExt: req.body.billingPhoneExt,
+                billingFax: req.body.billingFax,
+                billingEmail: req.body.billingEmail,
+                billingContact2: req.body.billingContact2,
+                billingPhone2: req.body.billingPhone2,
+                billingPhone2Ext: req.body.billingPhone2Ext,
+                billingFax2: req.body.billingFax2,
+                billingEmail2: req.body.billingEmail2,
+                billsMonthly: req.body.billsMonthly,
+                billingProfile: req.body.billingProfile,
+                DPT_AN: req.body.DPT_AN,
+                PPD_GL: req.body.PPD_GL,
+                DPT_AQ: req.body.DPT_AQ,
+                DPT_MT: req.body.DPT_MT,
+                DPT_OT: req.body.DPT_OT,
+                DPT_WH: req.body.DPT_WH,
+                DPT_WC: req.body.DPT_WC,
+                DPT_TH: req.body.DPT_TH,
+                DPT_ST: req.body.DPT_ST,
+                DPT_VT: req.body.DPT_VT,
+                DPT_CHT: req.body.DPT_CHT,
+                doNotUseDPT: req.body.doNotUseDPT,
+                doNotUseDPTReason: req.body.doNotUseDPTReason,
+                notes: req.body.notes,
+                ptProfile: req.body.ptProfile,
+            };
+            // Save therapist in the database
+            Therapist.create(therapist)
+                .then(data => {
+                res.send(data);
+                })
+                .catch(err => {
+                res.status(500).send({
+                    message:
+                    err.message || "Some error occurred while creating the therapist."
+                });
+                });
+        })
 
   
 };

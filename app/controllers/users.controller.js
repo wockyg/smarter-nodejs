@@ -68,6 +68,20 @@ exports.findOne = (req, res) => {
     });
 };
 
+// Find a user with a given initials
+exports.findOneInitials = (req, res) => {
+    User.findOne({ where: { initials: req.params.initials } })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving user."
+      });
+    });
+};
+
 // Find a single user with an id
 // exports.findOne = (req, res) => {
 //     const id = req.params.id;

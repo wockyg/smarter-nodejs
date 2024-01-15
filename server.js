@@ -14,8 +14,6 @@ const ReferralView = db.referralsView;
 const ReferralNote = db.referralNotes;
 const DptBillingVisit = db.dptBillingVisitsView;
 
-// const referralsView = require("./app/controllers/referralsView.controller.js");
-
 // const { ToadScheduler, SimpleIntervalJob, AsyncTask, Task } = require('toad-scheduler');
 // const { ToadScheduler, SimpleIntervalJob, AsyncTask, Task } = require('toad-scheduler');
 
@@ -168,6 +166,7 @@ require("./app/routes/d1500RowsView.routes")(app);
 require("./app/routes/d1500View.routes")(app);
 require("./app/routes/v1500RowsView.routes")(app);
 require("./app/routes/v1500View.routes")(app);
+require("./app/routes/map.routes")(app);
 
 // authorize().then(console.log("Authorization successful")).catch(console.error);
 // authorize().then(watchFolder).catch(console.error);
@@ -222,8 +221,101 @@ schedule.scheduleJob('0 6 * * *', function(){
 
 });
 
-// const rrPromise = new Promise((resolve, reject) => {
-//   referralsView.recordsRequest();
+// D_reportsToMD72hrs Task (Daily @ 6:10AM) (10 6 * * *)
+// schedule.scheduleJob('10 6 * * *', function(){
+
+//   const today = new Date();
+//   console.log('D_reportsToMD72hrs', today);
+
+//   today.setHours(0,0,0,0);
+
+//   const threeDaysAgo = new Date();
+//   const threeDays = threeDaysAgo.getDate() - 3;
+//   threeDaysAgo.setDate(threeDays);
+//   threeDaysAgo.setHours(0,0,0,0);
+
+//   //query referrals
+//   ReferralView.findAll({
+//       attributes: [
+//           'referralId',
+//           'assign',
+//           'claimant',
+//           'claimNumber',
+//           'reportReceivedDate',
+//           'reportToPhysician',
+//           'reportToAdjuster',
+//       ],
+//       where: {
+//         [Op.and]: [
+//                 {confirmAttend: 'Yes'},
+//                 {reportReceivedDate: {[Op.lte]: threeDaysAgo}},
+//                 {reportToPhysician: null},
+//         ]
+//       }
+//   })
+//   .then(referrals => {
+//     console.log(referrals.length);
+//     // console.log(referrals);
+
+//     const body = `
+//       <html>
+//           <head>
+//               <style>
+//                   table, th, td {
+//                   border: 1px solid black !important;
+//                   }
+//                   th {
+//                   text-align: center !important;
+//                   }
+//                   td {
+//                   text-align: left !important;
+//                   }
+//               </style>
+//           </head>
+//           <body>
+//               <table>
+//                   <tr>
+//                       <td>CC</td>
+//                       <td>Claimant</td>
+//                       <td>Claim Number</td>
+//                       <td>Report Rec'd</td>
+//                       <td>Report to Adj</td>
+//                       <td>Report to MD</td>
+//                   </tr>
+//                   ${referrals.map(r => (
+//                     `<tr>
+//                       <td>${r.assign}</td>
+//                       <td>${r.claimant}</td>
+//                       <td>${r.claimNumber}</td>
+//                       <td>${r.reportReceivedDate}</td>
+//                       <td>${r.reportToAdjuster}</td>
+//                       <td>${r.reportToPhysician}</td>
+//                     </tr>`
+//                   ))}
+//               </table>
+//           </body>
+//       </html>
+//     `;
+
+//     const params = {
+//       to_email: "acrane@definedpt.com",
+//       cc_email: "wmcclure@definedpt.com",
+//       subject: "Reports to MD 72hrs",
+//       message: body
+//     };
+
+//     emailjs.send('service_zl67u0w', 'template_a7ve3kt', params, {publicKey: '0mive5-lH56wNnNf7', privateKey: 'T8DWBUrOBVTit5NO7UhTo'})
+//             .then((res) => {
+//               console.log(res.status, res.text);
+//               console.log(params);
+//             }, (err) => {
+//               console.log(err.text);
+//     });
+//   })
+//   .catch(err => {
+//     console.log(`Error: ${err}`);
+//   });
+
 // });
 
 // W_rrWeeklyLog Task (Fridays @ 8:00PM) (0 20 * * 5)

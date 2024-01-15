@@ -13,6 +13,9 @@ module.exports = app => {
   // Retrieve a single user with email
   router.get("/:email", users.findOne);
 
+  // Retrieve a single user with initials
+  router.get("/initials/:initials", users.findOneInitials);
+
   // Retrieve all users
   router.get("/", users.findAll);
 
