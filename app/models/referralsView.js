@@ -23,18 +23,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATEONLY,
       allowNull: true
     },
-    fceId: {
-      type: DataTypes.INTEGER,
-      allowNull: true
-    },
-    ptAuthId: {
-      type: DataTypes.INTEGER,
-      allowNull: true
-    },
-    ptMaxAuthId: {
-      type: DataTypes.INTEGER,
-      allowNull: true
-    },
     odgAttendance: {
       type: DataTypes.INTEGER,
       allowNull: true

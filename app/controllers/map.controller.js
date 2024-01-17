@@ -1,6 +1,7 @@
 const db = require("../models");
 const Op = db.Sequelize.Op;
 const { setDefaults, fromAddress, geocode, RequestType } = require("react-geocode");
+const fetch = require("node-fetch");
 
 setDefaults({
   key: "AIzaSyDZTDhDWFKMSUkvPEzKEVEyNCzZh0SFTw4",
@@ -17,7 +18,7 @@ exports.fromAddress = (req, res) => {
   fromAddress(searchval)
   .then(({ results }) => {
       const { lat, lng } = results[0].geometry.location;
-      // console.log("Center:", lat, lng);
+      console.log("Center:", lat, lng);
       res.send({lat: lat, lon: lng});
   })
   .catch(console.error);
