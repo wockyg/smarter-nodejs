@@ -34,5 +34,8 @@
     "@rollup/plugin-run": "^3.0.1",
     "rollup": "^3.29.4",
     "sequelize-cli": "^6.6.1"
+  },
+  "engines": {
+    "node": "^21.6.0"
   }
 }
