@@ -394,25 +394,21 @@ exports.recordsRequest = (req, res) => {
                               - 3 + (week1.getDay() + 6) % 7) / 7);
       }
 
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
       tomorrow.setHours(-5,0,0,0);
 
-      const mon = new Date();
-      mon.setDate(mon.getDate() - 2);
-      mon.setHours(0,0,0,0);
-
-      const today = new Date();
-      today.setHours(-5,0,0,0);
-
       const week = today.getWeek();
-      const monWeek = mon.getWeek();
+      const tomWeek = tomorrow.getWeek();
 
       // console.log("WEEK:", week)
-      // console.log("mon:", mon)
-      // console.log("monWeek:", monWeek)
-      // console.log("tom:", tomorrow)
-      // console.log("today:", today)
+      console.log("today:", today)
+      console.log("todayWeek:", week)
+      console.log("tom:", tomorrow)
+      console.log("tomWeek:", tomWeek)
 
       // res.send(data);
 
@@ -421,6 +417,7 @@ exports.recordsRequest = (req, res) => {
 
           const workedDate = new Date(element.rrLastWorked);
           workedDate.setHours(workedDate.getHours() + 5);
+          const workedWeek = workedDate.getWeek();
 
           return VisitView.findAll({
                 attributes: [
@@ -493,12 +490,16 @@ exports.recordsRequest = (req, res) => {
 
                    worked = "FU/H";
                 }
-                else if (workedDate.getWeek() === week) {
+                else if (workedWeek === week) {
+                  console.log("rrLastWorked:", element.rrLastWorked)
+                  console.log("workedDate:", workedDate)
+                  console.log("workedWeek:", workedWeek)
+                  console.log("week:", week)
                   worked = element.rrLastWorked;
                 }
 
                 if (element.rrLastWorked !== null) {
-                  if (workedDate.getWeek() === week) {
+                  if (workedWeek === week) {
                     workedPrev = element.rrLastLastWorked
                   }
                   else {
