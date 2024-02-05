@@ -1,7 +1,6 @@
 const db = require("../models");
 const Op = db.Sequelize.Op;
 const { setDefaults, fromAddress, geocode, RequestType } = require("react-geocode");
-const fetch = require("node-fetch");
 
 setDefaults({
   key: "AIzaSyDZTDhDWFKMSUkvPEzKEVEyNCzZh0SFTw4",

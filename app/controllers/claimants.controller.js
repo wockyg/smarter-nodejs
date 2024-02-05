@@ -1,51 +1,108 @@
 const db = require("../models");
 const Claimant = db.claimants;
 const Op = db.Sequelize.Op;
+const { setDefaults, fromAddress, geocode, RequestType } = require("react-geocode");
+
+  setDefaults({
+    key: "AIzaSyDZTDhDWFKMSUkvPEzKEVEyNCzZh0SFTw4",
+    language: "en",
+    region: "es",
+    });
 
 
 // Create and Save a new claimant
 exports.create = (req, res) => {
-     // Validate request
-  // if (!req.body.lastName) {
-  //   res.status(400).send({
-  //     message: "Content can not be empty!"
-  //   });
-  //   return;
-  // }
 
-  // Create new claimant
-  const claimant = {
-    lastName: req.body.lastName,
-    firstName: req.body.firstName,
-    employerId: req.body.employerId,
-    gender: req.body.gender,
-    birthDate: req.body.birthDate || null,
-    injuryDate1: req.body.injuryDate1 || null,
-    injuryDate2: req.body.injuryDate2 || null,
-    address: req.body.address,
-    city: req.body.city,
-    state: req.body.state,
-    zip: req.body.zip,
-    phone: req.body.phone,
-    alternatePhone: req.body.alternatePhone,
-    email: req.body.email,
-    email2: req.body.email2,
-    notes: req.body.notes
-  };
+  fromAddress(`${req.body.address || ''}, ${req.body.city || ''}, ${req.body.state || ''} ${req.body.zip || ''}`)
+  .then(({ results }) => {
 
-  // Save claimant in the database
-  Claimant.create(claimant)
-    .then(data => {
-      res.send(data);
+        const { lat, lng } = results[0].geometry.location;
+        console.log("new therapist coordinates:", lat, lng);
+        
+        // Create new claimant
+        const claimant = {
+            lastName: req.body.lastName,
+            firstName: req.body.firstName,
+            employerId: req.body.employerId || null,
+            gender: req.body.gender || null,
+            birthDate: req.body.birthDate || null,
+            injuryDate1: req.body.injuryDate1 || null,
+            injuryDate2: req.body.injuryDate2 || null,
+            address: req.body.address || null,
+            city: req.body.city || null,
+            state: req.body.state || null,
+            zip: req.body.zip || null,
+            lat: lat || null,
+            lon: lng || null,
+            phone: req.body.phone || null,
+            alternatePhone: req.body.alternatePhone || null,
+            email: req.body.email || null,
+            email2: req.body.email2 || null,
+            notes: req.body.notes || null
+        };
+
+        // Save claimant in the database
+        Claimant.create(claimant)
+            .then(data => {
+            res.send(data);
+            })
+            .catch(err => {
+            res.status(500).send({
+                message:
+                err.message || "Some error occurred while creating the claimant."
+            });
+            });
     })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the claimant."
-      });
-    });
-
   
+};
+
+// Update an claimant by the id in the request
+exports.update = (req, res) => {
+    const id = req.params.id;
+
+    if (req.body.address || req.body.city || req.body.state || req.body.zip) {
+        const newAddress = `${req.body.address || ''}, ${req.body.city || ''}, ${req.body.state || ''} ${req.body.zip || ''}`
+        fromAddress(newAddress)
+        .then(({ results }) => {
+            const { lat, lng } = results[0].geometry.location;
+            console.log("new coordinates:", lat, lng);
+            console.log("new address:", newAddress);
+            Claimant.update({...req.body, lat: lat, lon: lng}, {where: { claimantId: id }})
+            .then(num => {
+                res.send({
+                message: `${num} rows updated w/ latlon`
+                });
+            })
+            .catch(err => {
+                res.status(500).send({
+                    message:
+                    err.message || "Some error occurred while updating the claimant."
+                });
+            });
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                err.message || "Some error occurred while geocoding the new address."
+            });
+        });
+    }
+    else {
+        // just update regular
+        Claimant.update(req.body, {
+            where: { claimantId: id }
+        })
+            .then(num => {
+                res.send({
+                message: `${num} rows updated regular`
+                });
+            })
+            .catch(err => {
+            res.status(500).send({
+                message: "Error updating claimant with id=" + id
+            });
+            });
+    }
 };
 
 // Retrieve all claimants from the database.
@@ -85,31 +142,6 @@ exports.findOne = (req, res) => {
         });
         });
   
-};
-
-// Update an claimant by the id in the request
-exports.update = (req, res) => {
-    const id = req.params.id;
-
-    Claimant.update(req.body, {
-        where: { claimantId: id }
-    })
-        .then(num => {
-        if (num == 1) {
-            res.send({
-            message: "claimant was updated successfully."
-            });
-        } else {
-            res.send({
-            message: `Cannot update claimant with id=${id}. Maybe claimant was not found or req.body is empty!`
-            });
-        }
-        })
-        .catch(err => {
-        res.status(500).send({
-            message: "Error updating claimant with id=" + id
-        });
-        });
 };
 
 // Delete an claimant with the specified id in the request

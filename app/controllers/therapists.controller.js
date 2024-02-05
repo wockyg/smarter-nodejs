@@ -12,13 +12,6 @@ const { setDefaults, fromAddress, geocode, RequestType } = require("react-geocod
 
 // Create and Save a new therapist
 exports.create = (req, res) => {
-     // Validate request
-  // if (!req.body.lastName) {
-  //   res.status(400).send({
-  //     message: "Content can not be empty!"
-  //   });
-  //   return;
-  // }
 
   fromAddress(`${req.body.address}, ${req.body.city}, ${req.body.state} ${req.body.zip}`)
         .then(({ results }) => {
@@ -108,6 +101,56 @@ exports.create = (req, res) => {
         })
 
   
+};
+
+// Update a therapist by the id in the request
+exports.update = (req, res) => {
+    const id = req.params.id;
+
+    if (req.body.address || req.body.city || req.body.state || req.body.zip) {
+        const newAddress = `${req.body.address || ''}, ${req.body.city || ''}, ${req.body.state || ''} ${req.body.zip || ''}`
+        fromAddress(newAddress)
+        .then(({ results }) => {
+            const { lat, lng } = results[0].geometry.location;
+            console.log("new coordinates:", lat, lng);
+            console.log("new address:", newAddress);
+            Therapist.update({...req.body, lat: lat, lon: lng}, {where: { therapistId: id }})
+            .then(num => {
+                res.send({
+                message: `${num} rows updated w/ latlon`
+                });
+            })
+            .catch(err => {
+                res.status(500).send({
+                    message:
+                    err.message || "Some error occurred while updating the therapist."
+                });
+            });
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                err.message || "Some error occurred while geocoding the new address."
+            });
+        });
+    }
+    else {
+        // just update regular
+        Therapist.update(req.body, {
+            where: { therapistId: id }
+        })
+        .then(num => {
+            res.send({
+            message: `${num} rows updated regular`
+            });
+        })
+        .catch(err => {
+        res.status(500).send({
+            message: "Error updating therapist with id=" + id
+        });
+        });
+    }
+
 };
 
 // Retrieve all therapists from the database.
@@ -273,31 +316,6 @@ exports.findOne = (req, res) => {
         });
         });
   
-};
-
-// Update an therapist by the id in the request
-exports.update = (req, res) => {
-    const id = req.params.id;
-
-    Therapist.update(req.body, {
-        where: { therapistId: id }
-    })
-        .then(num => {
-        if (num == 1) {
-            res.send({
-            message: "therapist was updated successfully."
-            });
-        } else {
-            res.send({
-            message: `Cannot update therapist with id=${id}. Maybe therapist was not found or req.body is empty!`
-            });
-        }
-        })
-        .catch(err => {
-        res.status(500).send({
-            message: "Error updating therapist with id=" + id
-        });
-        });
 };
 
 // Delete an therapist with the specified id in the request

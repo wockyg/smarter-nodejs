@@ -12,9 +12,9 @@ const { uploadFile } = require('../../s3')
 exports.create = async (req, res) => {
 
   // upload screenshot to AWS
-   const result = req.file && await uploadFile(req.file);
+  const result = req.file && await uploadFile(req.file);
   //  console.log(result);
-   result && await unlinkFile(req.file.path);
+  result && await unlinkFile(req.file.path);
 
   // Create new bugReport object
   const bugReport = {

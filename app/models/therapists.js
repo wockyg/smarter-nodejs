@@ -86,7 +86,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(50),
       allowNull: true
     },
-    rrEmailPreference: {
+    rrPreference: {
       type: DataTypes.STRING(50),
       allowNull: true
     },
@@ -94,15 +94,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    rrFaxPreference: {
-      type: DataTypes.STRING(50),
-      allowNull: true
-    },
     rrFax: {
-      type: DataTypes.STRING(50),
-      allowNull: true
-    },
-    rrPhonePreference: {
       type: DataTypes.STRING(50),
       allowNull: true
     },

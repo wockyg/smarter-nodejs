@@ -1,4 +1,10 @@
+// const { google } = require('googleapis');
+const fs = require('fs-extra');
 const db = require("../models");
+const googledrive = require('../../GoogleDriveAPI');
+const pdfco = require('../../PDFcoAPI');
+
+
 const D1500 = db.d1500;
 const ReferralView = db.referralsView;
 const Visit = db.dptBillingVisits;
@@ -7,54 +13,130 @@ const D1500Rows = db.d1500Rows;
 const V1500 = db.v1500;
 const Op = db.Sequelize.Op;
 
+// const util = require('util')
+// const unlinkFile = util.promisify(fs.unlink)
+
 
 // Create and Save a new d1500
 exports.create = (req, res) => {
 
-  // Create new d1500
+    const { v1500_filename, d1500_filename } = req.body;
+
+    const folderId_inbound = '17TgrR79PGv6I5AnwYJU-M9hfkkqWxwa4'; // BillMachineIn folder in SharedDrive
+
+    // console.warn(req.file);
+
+    console.log(`......... D1500 submitted: ${d1500_filename} .........`)
+
+    // authorize googledrive
+    googledrive.authorize()
+    .then((token) => {
+        console.log("Authorized..........");
+        // locate matching V1500
+        console.log("searching for matching V1500..........");
+        googledrive.getFile(token, folderId_inbound, v1500_filename)
+        .then(path => {
+            // if V1500 match found, upload temp file and extract notes
+            if (path) {
+                console.log("Match found..........");
+                console.log("Uploading V1500 as temp file to pdf.co..........");
+                console.log("Uploading D1500 as temp file to pdf.co..........");
+                // upload temp files to pdf.co
+                Promise.all([
+                    pdfco.uploadTempFile(path), // v1500
+                    pdfco.uploadTempFile(req.file.path) // d1500
+                ])
+                .then(urls => {
+                    console.log("V1500 Temp file uploaded to PDF.co: ", v1500_filename);
+                    console.log("D1500 Temp file uploaded to PDF.co: ", d1500_filename);
+                    console.log("Splitting visit notes from V1500..........");
+                    // extract notes from V1500
+                    pdfco.splitPDF(urls[0], '1,2-', true, `notes_${v1500_filename}`, false)
+                    .then(split => {
+                        console.log("Notes split..........");
+                        console.log("Merging notes with D1500..........");
+                        // merge notes with D1500
+                        pdfco.mergePDF(`${urls[1]},${split.data.urls[1]}`, d1500_filename)
+                        .then(merge => {
+                            console.log("Notes merged..........");
+                            // console.log(merge);
+                            console.log("Saving D1500 to outbound..........");
+                            googledrive.uploadFile(token, d1500_filename, '', req.file.path)
+
+                            console.log("Moving V1500 to ????????..........");
+
+                            // console.log("Unlinking local files..........");
+                            // console.log(req.file.path);
+                            // console.log(path);
+                            // Promise.all([
+                            //     fs.unlink(path),
+                            //     fs.unlink(req.file.path)
+                            // ])
+                            // .then(res => {
+                            //     console.log("Local V1500 file unlinked..........");
+                            //     console.log("Local D1500 file unlinked..........");
+                            //     console.log(res);
+                            // }).catch(err => console.log("Unlink Failed......", err))
+                        }).catch(err => console.log("Merge Failed......", err))
+                    })
+                }).catch(err => console.log("Split Failed......", err))
+            }
+        }).catch(err => console.log("No Match Found......", err))
+    }).catch(err => console.log("Not Authorized..........", err))
+    
+    // merge notes with D1500
+
+    // move V1500 to _____ folder
+
+    // save new D1500 to Outbound folder
+
+  // Create new d1500 object
   const d1500 = {
-    referralId: req.body.referralId,
+    referralId: +req.body.referralId,
     sendFormat: req.body.sendFormat,
-    dateApproved: req.body.dateApproved,
-    physician_name: req.body.physician_name,
-    physician_npi: req.body.physician_npi,
-    patient_account_no: req.body.patient_account_no,
-    diagnosis_a: req.body.diagnosis_a,
-    diagnosis_b: req.body.diagnosis_b,
-    diagnosis_c: req.body.diagnosis_c,
-    diagnosis_d: req.body.diagnosis_d,
-    diagnosis_e: req.body.diagnosis_e,
-    diagnosis_f: req.body.diagnosis_f,
-    diagnosis_g: req.body.diagnosis_g,
-    diagnosis_h: req.body.diagnosis_h,
-    diagnosis_i: req.body.diagnosis_i,
-    diagnosis_j: req.body.diagnosis_j,
-    diagnosis_k: req.body.diagnosis_k,
-    diagnosis_l: req.body.diagnosis_l,
+    dateApproved: req.body.dateApproved[0],
+    physician_name: req.body.physician_name === 'undefined' ? null : req.body.physician_name,
+    physician_npi: req.body.physician_npi === 'undefined' ? null : req.body.physician_npi,
+    patient_account_no: req.body.patient_account_no === 'undefined' ? null : req.body.patient_account_no,
+    diagnosis_a: req.body.diagnosis_a === 'undefined' ? null : req.body.diagnosis_a,
+    diagnosis_b: req.body.diagnosis_b === 'undefined' ? null : req.body.diagnosis_b,
+    diagnosis_c: req.body.diagnosis_c === 'undefined' ? null : req.body.diagnosis_c,
+    diagnosis_d: req.body.diagnosis_d === 'undefined' ? null : req.body.diagnosis_d,
+    diagnosis_e: req.body.diagnosis_e === 'undefined' ? null : req.body.diagnosis_e,
+    diagnosis_f: req.body.diagnosis_f === 'undefined' ? null : req.body.diagnosis_f,
+    diagnosis_g: req.body.diagnosis_g === 'undefined' ? null : req.body.diagnosis_g,
+    diagnosis_h: req.body.diagnosis_h === 'undefined' ? null : req.body.diagnosis_h,
+    diagnosis_i: req.body.diagnosis_i === 'undefined' ? null : req.body.diagnosis_i,
+    diagnosis_j: req.body.diagnosis_j === 'undefined' ? null : req.body.diagnosis_j,
+    diagnosis_k: req.body.diagnosis_k === 'undefined' ? null : req.body.diagnosis_k,
+    diagnosis_l: req.body.diagnosis_l === 'undefined' ? null : req.body.diagnosis_l,
+    v1500_filename: req.body.v1500_filename === 'undefined' ? null : req.body.v1500_filename,
+    d1500_filename: req.body.d1500_filename === 'undefined' ? null : req.body.d1500_filename,
   };
 
-  // Save d1500 in the database
+  // Save d1500 object in the database
   D1500.create(d1500)
     .then(data => {
+        res.send(data);
         // console.log(data.dataValues);
         // res.send(data);
-        if (req.body.v1500Id) {
-            V1500.update({hcfaId: data.dataValues.hcfaId}, {
-                where: { v1500Id: req.body.v1500Id }
-            })
-            .then(response => {
-                res.send(data);
-            })
-            .catch(err => {
-                res.status(500).send({
-                message:
-                    err.message || "Some error occurred while updating the row."
-                });
-            });
-        }
-        else {
-            res.send(data);
-        }
+        // if (req.body.v1500Id) {
+        //     V1500.update({hcfaId: data.dataValues.hcfaId}, {
+        //         where: { v1500Id: req.body.v1500Id }
+        //     })
+        //     .then(response => {
+        //         res.send(data);
+        //     })
+        //     .catch(err => {
+        //         res.status(500).send({
+        //         message:
+        //             err.message || "Some error occurred while updating the row."
+        //         });
+        //     });
+        // }
+        // else {
+        //     res.send(data);
+        // }
     })
     .catch(err => {
       res.status(500).send({
@@ -216,6 +298,7 @@ exports.create = (req, res) => {
 // };
 
 // Retrieve all d1500s from the database.
+
 exports.findAll = (req, res) => {
 
     D1500.findAll()

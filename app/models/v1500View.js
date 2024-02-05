@@ -22,7 +22,27 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true
     },
+    jurisdiction: {
+      type: DataTypes.STRING(5),
+      allowNull: true
+    },
+    bodyPart: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
     method: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    v1500_filename: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    d1500_filename: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    original_dos: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
@@ -44,6 +64,10 @@ module.exports = function(sequelize, DataTypes) {
     },
     adjusterClient: {
       type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    clientDiscount: {
+      type: DataTypes.INTEGER,
       allowNull: true
     },
     original_dos: {

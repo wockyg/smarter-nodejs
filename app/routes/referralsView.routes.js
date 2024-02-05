@@ -82,6 +82,9 @@ module.exports = app => {
   // Retrieve dashboard stats
   router.get("/dashboard/:initials", referralsView.findAllDashboard);
 
+  // Retrieve all service/bodyPart for v1500 upload orphan dropown
+  router.get("/orphan", referralsView.findAllOrphanDropdown);
+
   // Retrieve all referrals tasks
   router.get("/tasks", referralsView.findAllReferralsTasks);
 

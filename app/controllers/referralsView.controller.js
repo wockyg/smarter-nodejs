@@ -362,11 +362,9 @@ exports.recordsRequest = (req, res) => {
             'rrLastWorked',
             'ccWorked',
             'rrFaxReceived',
-            'rrFaxPreference',
+            'rrPreference',
             'rrFax',
-            'rrEmailPreference',
             'rrEmail',
-            'rrPhonePreference',
             'rrPhone',
         ],
         where: { 
@@ -847,7 +845,7 @@ exports.findAllTrackedCC = (req, res) => {
               [Op.or]: [initials1, initials2]
             },
             ptStatus: {
-              [Op.or]: [null, "Active", "Follow-Up", "Hold"]
+              [Op.or]: [null, "Active", "Follow-Up", "Hold", "Complete"]
             },
             betaTest: true,
         },
@@ -1283,6 +1281,32 @@ exports.findAllFollowUpHoldDashboard = (req, res) => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while retrieving referrals."
+      });
+    });
+};
+
+// Find all service/bodyPart for v1500 upload orphan dropown
+exports.findAllOrphanDropdown = (req, res) => {
+
+    ReferralView.findAll({
+        attributes: [
+            'referralId',
+            'service', 
+            'claimNumber',
+            'bodyPart',
+        ],
+        where: {
+            billingStatus: "Active",
+            service: {[Op.like]: '%DPT%'}
+        }
+    })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving tracked files."
       });
     });
 };

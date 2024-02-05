@@ -14,97 +14,227 @@ const ReferralView = db.referralsView;
 const ReferralNote = db.referralNotes;
 const DptBillingVisit = db.dptBillingVisitsView;
 
-// const { ToadScheduler, SimpleIntervalJob, AsyncTask, Task } = require('toad-scheduler');
-// const { ToadScheduler, SimpleIntervalJob, AsyncTask, Task } = require('toad-scheduler');
+const fs = require('fs-extra');
+const googledrive = require('./GoogleDriveAPI');
 
-// const fs = require('fs').promises;
-// const path = require('path');
-// const process = require('process');
-// const {authenticate} = require('@google-cloud/local-auth');
-// const {google} = require('googleapis');
-
-// const SCOPES = ['https://www.googleapis.com/auth/drive'];
-// const TOKEN_PATH = path.join(process.cwd(), 'token.json');
-// const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
+const path = require('path');
+const process = require('process');
 
 
-/**
- * Reads previously authorized credentials from the save file.
- */
-// async function loadSavedCredentialsIfExist() {
-//   try {
-//     const content = await fs.readFile(TOKEN_PATH);
-//     const credentials = JSON.parse(content);
-//     return google.auth.fromJSON(credentials);
-//   } catch (err) {
-//     return null;
-//   }
-// }
+// ---------------- Google Drive API / PDF.co test code ------------------ //
+//----------------------------------------------------------------------//
+//                                                                      //
 
-/**
- * Serializes credentials to a file comptible with GoogleAUth.fromJSON.
- */
-// async function saveCredentials(client) {
-//   const content = await fs.readFile(CREDENTIALS_PATH);
-//   const keys = JSON.parse(content);
-//   const key = keys.installed || keys.web;
-//   const payload = JSON.stringify({
-//     type: 'authorized_user',
-//     client_id: key.client_id,
-//     client_secret: key.client_secret,
-//     refresh_token: client.credentials.refresh_token,
-//   });
-//   await fs.writeFile(TOKEN_PATH, payload);
-// }
+// const { google } = require('googleapis');
+// const apikey = require('./apikey.json');
 
-/**
- * Load or request or authorization to call APIs.
- */
+// const SCOPE = ['https://www.googleapis.com/auth/drive'];
+
+// const { create } = require('apisauce')
+
+// const PDF_KEY = "wmcclure1016@gmail.com_aS4kX75jUGkH4v5kgJcismLadY2SE3mY5TwKHjc3CU2BV8uqi0332QfIN274kf5vmvRBis84pS75i5uGnPs8ym2HS3mmQA8373JnNW306m0oW4yisXD0K6134d3X16XrG09Q0kLHpT9Rqme4aqTXqrcGQV";
+
+// const fileLink = 'https://drive.google.com/file/d/1S63C8NZD4oFRAC314H7p-bQSGz031T-J/view?usp=drive_link'
+
+// define the api
+// const api = create({
+//   baseURL: 'https://api.pdf.co/v1',
+//   headers: { 
+//     "x-api-key": PDF_KEY,
+//     "Content-Type": 'application/octet-stream'
+//   },
+// })
+
 // async function authorize() {
-//   let client = await loadSavedCredentialsIfExist();
-//   if (client) {
-//     return client;
-//   }
-//   client = await authenticate({
-//     scopes: SCOPES,
-//     keyfilePath: CREDENTIALS_PATH,
-//   });
-//   if (client.credentials) {
-//     await saveCredentials(client);
-//   }
-//   return client;
+//   const jwtClient = new google.auth.JWT(
+//     apikey.client_email,
+//     null,
+//     apikey.private_key,
+//     SCOPE
+//   );
+//   await jwtClient.authorize();
+//   return jwtClient;
 // }
 
-/**
- * Lists the names and IDs of up to 10 files.
- */
-// async function listFiles(authClient) {
-//   const drive = google.drive({version: 'v3', auth: authClient});
-//   const res = await drive.files.list({
-//     pageSize: 10,
-//     fields: 'nextPageToken, files(id, name)',
-//   });
-//   const files = res.data.files;
-//   if (files.length === 0) {
-//     console.log('No files found.');
-//     return;
-//   }
+// async function uploadFile(authClient) {
 
-//   console.log('Files:');
-//   files.map((file) => {
-//     console.log(`${file.name} (${file.id})`);
-//   });
+//   return new Promise((resolve, reject) => {
+
+//     const drive = google.drive({version: 'v3', auth: authClient});
+
+//     const fileMetaData = {
+//       name: "test123Boom",
+//       parents: ["1B7Wt6fl5Gevvray3hu9k0s5S9rHwbFgy"]
+//     }
+
+//     drive.files.create({
+//       resource: fileMetaData,
+//       media: {
+//         body: fs.createReadStream('./winnerWinner.txt')
+//       },
+//       fields: 'id',
+//       supportsAllDrives: true
+//     }, function(err, file){
+//       if (err) {
+//         console.log('FAIL....')
+//         return reject(err);
+//       }
+//       console.log('SUCCESS!!')
+//       resolve(file)
+//     })
+//   })
 // }
 
-// async function watchFolder(authClient) {
-//   const drive = google.drive({version: 'v3', auth: authClient});
-//   const res = await drive.files.watch({
-//     fileId: '1f6t2vRMswK9bUIvO44a9Zo57qEOljG3B',
-//     // supportsAllDrives: 'true',
-//   });
-//   // console.log(res.data)
-//   // const files = res.data.files;
+// async function searchFolder(authClient) {
+
+//   const folderId = '1B7Wt6fl5Gevvray3hu9k0s5S9rHwbFgy'; // !Smarter folder in SharedDrive 1DcQT9tx8ktXBG0a-mVF9yW4yEQnvCn2t
+//   const folderId_Inbound = '1pSGnEyk4o2OjWzFTmvaYxZrdQIiiLz-j'; // InBound 1500s (NEEW) folder in SharedDrive
+//   const folderId2 = '11Nu8UkSSSBzSdNjmtWe67roaGcnwt_95'; //folder in MyDrive
+//   const folderId3 = '0AMmDAWFgfc9KUk9PVA'; //SharedDrive root folder
+
+//   return new Promise((resolve, reject) => {
+
+//     const drive = google.drive({version: 'v3', auth: authClient});
+
+//     const files = [];
+
+//     drive.files.list({
+//       q: `'${folderId_Inbound}' in parents`, 
+//       supportsAllDrives: true,
+//       includeItemsFromAllDrives: true,
+//       // driveId: '0AMmDAWFgfc9KUk9PVA'
+//     }).then(res => {
+//       console.log(res)
+//       res.data.files.forEach(f => {
+//         console.log("okayyyyyyyyyy")
+//         files.push(f);
+//       })
+//       files.map(f => console.log(f))
+//       resolve(res);
+//     }).catch(err => reject(err))
+//   })
 // }
+
+// async function moveFile(authClient) {
+
+//   const source_folderId = '17TgrR79PGv6I5AnwYJU-M9hfkkqWxwa4'; // BillMachineIn folder in SharedDrive
+//   const target_folderId = '17KdAnx0g6ADf8RqkpJtRJtsQibk1l8_z'; // BillMachineOut folder in SharedDrive 17TgrR79PGv6I5AnwYJU-M9hfkkqWxwa4
+
+//   return new Promise((resolve, reject) => {
+
+//     const drive = google.drive({version: 'v3', auth: authClient});
+
+//     drive.files.list({
+//       q: `'${source_folderId}' in parents and mimeType != 'application/vnd.google-apps.folder'`, 
+//       supportsAllDrives: true,
+//       includeItemsFromAllDrives: true,
+//       // driveId: '0AMmDAWFgfc9KUk9PVA'
+//     }).then(res => {
+
+//       res.data.files.map(f => console.log(f));
+//       console.log("0 id:", res.data.files[0].id)
+//       console.log(res);
+
+//       // resolve(res);
+
+//       console.log("................")
+//       console.log("................")
+//       console.log("................")
+//       console.log("Updating File........")
+//       console.log("................")
+//       console.log("................")
+//       console.log("................")
+
+//       drive.files.update({
+//         fileId: res.data.files[0].id,
+//         supportsAllDrives: true,
+//         addParents: target_folderId,
+//         removeParents: source_folderId
+//       })
+//       .then(res2 => {
+//         console.log("yippee!!");
+//         console.log(res2);
+//         resolve(res2);
+//       })
+//       .catch(err => reject(err))
+
+//     }).catch(err => reject(err))
+//   })
+// }
+
+// async function splitFile(authClient) {
+
+//   const source_folderId = '17TgrR79PGv6I5AnwYJU-M9hfkkqWxwa4'; // BillMachineIn folder in SharedDrive
+//   const target_folderId = '17KdAnx0g6ADf8RqkpJtRJtsQibk1l8_z'; // BillMachineOut folder in SharedDrive 17TgrR79PGv6I5AnwYJU-M9hfkkqWxwa4
+
+//   return new Promise((resolve, reject) => {
+
+//     const drive = google.drive({version: 'v3', auth: authClient});
+
+//     drive.files.list({
+//       q: `'${source_folderId}' in parents and mimeType != 'application/vnd.google-apps.folder'`, 
+//       supportsAllDrives: true,
+//       includeItemsFromAllDrives: true,
+//       // driveId: '0AMmDAWFgfc9KUk9PVA'
+//     }).then(res => {
+
+//       res.data.files.map(f => console.log(f));
+//       // console.log("0 id:", res.data.files[0].id)
+//       // console.log(res);
+
+//       // resolve(res);
+
+//       console.log("................")
+//       console.log("................")
+//       console.log("................")
+//       console.log("Uploading File........")
+//       console.log("................")
+//       console.log("................")
+//       console.log("................")
+
+//       api
+//         .get('/file/upload/get-presigned-url')
+//         .then(res2 => {
+//           console.log(res2.data.presignedUrl)
+//           fs.readFile('./testFile.pdf', (err, data) => {
+//             console.log("FILE READ SUCCESS");
+//             api.put(res2.data.presignedUrl, data)
+//                .then( res3 => {
+//                 console.log(res3.status)
+//                 api.post('/pdf/split', {
+//                   url: res3.config.url,
+//                   pages: '1-2,3-',
+//                   inline: true,
+//                   name: "splitter.pdf",
+//                   async: false
+//                 })
+//                })
+//                .catch(err => reject(err));
+               
+//           })
+//         })
+
+//     }).catch(err => reject(err))
+//   })
+// }
+
+// const filePath = `./temp/pleaseUpload.pdf`;
+// const dest = fs.createWriteStream(filePath);
+
+// googledrive.authorize()
+//            .then(token => {
+//             googledrive.getFileTest(token)
+//                        .then(res => {
+//                         res.data.pipe(dest);
+//                        })
+//                        .catch("BOOBOO STANK");
+//            })
+//            .catch("BOOBOO STANK");
+
+//                                                                    //
+//--------------------------------------------------------------------//
+// ---------------- END Google Drive API / PDF.co test code ------------------ //
+
 
 const app = express();
 
@@ -168,8 +298,8 @@ require("./app/routes/v1500RowsView.routes")(app);
 require("./app/routes/v1500View.routes")(app);
 require("./app/routes/map.routes")(app);
 
-// authorize().then(console.log("Authorization successful")).catch(console.error);
-// authorize().then(watchFolder).catch(console.error);
+
+// const { ToadScheduler, SimpleIntervalJob, AsyncTask, Task } = require('toad-scheduler');
 
 // const scheduler = new ToadScheduler();
 

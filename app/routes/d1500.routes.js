@@ -4,11 +4,15 @@ module.exports = app => {
 
   var router = require("express").Router();
 
+  const multer  = require('multer');
+  // const upload = multer({ dest: './screenshots/' });
+  const upload = multer({ dest: require.main?.path + '/temp/' });
+
   // Create a new d1500
   // router.post("/upload", d1500.upload);
 
   // Create a new d1500
-  router.post("/", d1500.create);
+  router.post("/", upload.single('d1500Blob'), d1500.create);
 
   // Retrieve all d1500
   router.get("/", d1500.findAll);

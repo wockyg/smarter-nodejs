@@ -302,7 +302,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(50),
       allowNull: true
     },
-    rrFaxPreference: {
+    rrPreference: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
@@ -310,15 +310,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    rrEmailPreference: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
     rrEmail: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    rrPhonePreference: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
@@ -692,6 +684,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     betaTest: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
+    },
+    confirmedPayor: {
       type: DataTypes.BOOLEAN,
       allowNull: true
     }

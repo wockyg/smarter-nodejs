@@ -380,6 +380,10 @@ module.exports = function(sequelize, DataTypes) {
     betaTest: {
       type: DataTypes.BOOLEAN,
       allowNull: true
+    },
+    confirmedPayor: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
     }
   }, {
     sequelize,
