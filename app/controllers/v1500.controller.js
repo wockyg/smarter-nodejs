@@ -344,22 +344,30 @@ exports.uploadSmarter = async (req, res) => {
 
     // Post to Sensible
     const sensible = new SensibleSDK(process.env.SENSIBLE_API_KEY);
-    const request = await Promise.all(
-        req.files.map(file => {
-            const filepath = file.path
-            return sensible.extract({
-                path: filepath,
-                documentType: "cms_1500_sensible_demo",
-                configurationName: "02_12",
-                environment: "production",
-                documentName: file.originalname,
-                // webhook: {
-                //     url:"https://smarter-nodejs.onrender.com/api/v1500/webhook/sensible",
-                //     payload: "additional info, for example, a UUID for verification",
-                // }
-            });
-        })
-    )
+
+    try {
+        const request = await Promise.all(
+            req.files.map(file => {
+                const filepath = file.path
+                return sensible.extract({
+                    path: filepath,
+                    documentType: "cms_1500_sensible_demo",
+                    configurationName: "02_12",
+                    environment: "production",
+                    documentName: file.originalname,
+                    webhook: {
+                        url:"https://smarter-nodejs.onrender.com/api/v1500/webhook/sensible",
+                        // payload: "additional info, for example, a UUID for verification",
+                    }
+                });
+            })
+        )
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        throw error;
+    }
 
     console.log(request)
 
@@ -511,6 +519,7 @@ exports.webhookSensible = async (req, res) => {
     // make sure each dos is a date
     // 
 
+    console.warn("WEBHOOK CONSUMED!")
     console.log(req.body)
 
     res.status(200).send(req.body);
