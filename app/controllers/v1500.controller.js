@@ -362,7 +362,7 @@ exports.uploadSmarter = async (req, res) => {
                 });
             })
         )
-        const data = await response.json();
+        const data = await request.json();
         return data;
     } catch (error) {
         console.error('Error fetching data:', error);
