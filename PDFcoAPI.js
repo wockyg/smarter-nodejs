@@ -3,14 +3,11 @@ const fs = require('fs-extra');
 // const { google } = require('googleapis');
 const { create } = require('apisauce')
 
-// const PDF_KEY = "wmcclure1016@gmail.com_aS4kX75jUGkH4v5kgJcismLadY2SE3mY5TwKHjc3CU2BV8uqi0332QfIN274kf5vmvRBis84pS75i5uGnPs8ym2HS3mmQA8373JnNW306m0oW4yisXD0K6134d3X16XrG09Q0kLHpT9Rqme4aqTXqrcGQV";
-const PDF_KEY = process.env.PDF_KEY
-
 // define the api
 const api = create({
   baseURL: 'https://api.pdf.co/v1',
   headers: { 
-    "x-api-key": PDF_KEY,
+    "x-api-key": process.env.PDF_KEY,
     // "Content-Type": 'application/octet-stream'
   },
 })

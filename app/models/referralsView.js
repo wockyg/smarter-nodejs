@@ -346,6 +346,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(202),
       allowNull: true
     },
+    adjusterBeaver: {
+      type: DataTypes.STRING(202),
+      allowNull: true
+    },
     adjusterClientId: {
       type: DataTypes.INTEGER,
       allowNull: true
@@ -361,7 +365,7 @@ module.exports = function(sequelize, DataTypes) {
     adjusterDisplay: {
       type: DataTypes.VIRTUAL,
       get() {
-        return this.adjusterId ? `${this.adjuster} | ${this.adjusterClient}` : null;
+        return this.adjusterId ? `${this.adjuster} | ${this.adjusterClient || '-NO CLIENT LISTED-'}` : null;
       }
     },
     casemanagerId: {

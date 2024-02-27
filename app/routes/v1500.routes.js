@@ -4,8 +4,21 @@ module.exports = app => {
 
   var router = require("express").Router();
 
-  // Upload a new v1500
-  router.post("/upload", v1500.upload);
+  const multer  = require('multer');
+  // const upload = multer({ dest: './v1500_uploads/' });
+  const upload = multer({ dest: require.main?.path + '/temp/' });
+
+  // Upload a new v1500 using nanonets
+  router.post("/upload/nanonets", v1500.uploadNanonets);
+
+  // Upload a new v1500 using sensible
+  router.post("/upload/sensible", v1500.uploadSensible);
+
+  // Upload a new v1500 using smarter
+  router.post("/upload/smarter", upload.array('v1500Blobs'), v1500.uploadSmarter);
+
+  // Webhook for receiving new v1500 data using sensible
+  router.post("/webhook/sensible", v1500.webhookSensible);
 
   // Create a new v1500
   // router.post("/", v1500.create);
