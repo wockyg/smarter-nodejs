@@ -23,11 +23,19 @@ module.exports = function(sequelize, DataTypes) {
         key: 'hcfaId'
       }
     },
+    claim_number: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
     v1500_filename: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
     d1500_filename: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    original_filename: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
@@ -106,7 +114,11 @@ module.exports = function(sequelize, DataTypes) {
     d1500Approved: {
       type: DataTypes.DATE,
       allowNull: true
-    }
+    },
+    num_matches: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
   }, {
     sequelize,
     tableName: 'v1500',

@@ -14,6 +14,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    claim_number: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    num_matches: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     dateAdded: {
       type: DataTypes.DATE,
       allowNull: true
@@ -39,6 +47,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     d1500_filename: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    original_filename: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
