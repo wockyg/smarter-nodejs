@@ -55,6 +55,18 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: true
     },
+    extractionId: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    extractionStatus: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    page_count: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
     diagnosis_a: {
       type: DataTypes.STRING(100),
       allowNull: true

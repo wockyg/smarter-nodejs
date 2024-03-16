@@ -50,9 +50,9 @@ async function listFiles(authClient, folderId) {
 }
 exports.listFiles = listFiles
 
-// Find file in specified GD folder
+// Find file by name in specified GD folder
 //
-async function getFile(authClient, folderId, fileName) {
+async function getFileByName(authClient, folderId, fileName) {
 
   const filePath = `./temp/${fileName}`;
   const dest = fs.createWriteStream(filePath);
@@ -82,13 +82,38 @@ async function getFile(authClient, folderId, fileName) {
       },{ responseType: 'stream' })
       .then(res2 => {
         res2.data.pipe(dest);
-        // resolve({name: res.data.files[0].name, response: data});
         resolve(filePath);
       }).catch(err => reject(err))
     }).catch(err => reject(err))
   })
 }
-exports.getFile = getFile
+exports.getFileByName = getFileByName
+
+// Find file by id
+//
+async function getFileById(authClient, fileId) {
+
+  const filePath = `./temp/${fileName}`;
+  const dest = fs.createWriteStream(filePath);
+
+  return new Promise((resolve, reject) => {
+
+    const drive = google.drive({version: 'v3', auth: authClient});
+
+    drive.files.get({
+      fileId: fileId,
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
+      alt: 'media'
+    },{ responseType: 'stream' })
+    .then(res => {
+      res.data.pipe(dest);
+      resolve(filePath);
+    }).catch(err => reject(err))
+
+  })
+}
+exports.getFileById = getFileById
 
 async function uploadFile(authClient, name, folderId, localFile) {
 
@@ -120,6 +145,65 @@ async function uploadFile(authClient, name, folderId, localFile) {
 }
 exports.uploadFile = uploadFile
 
+async function moveFile(authClient, fileId, source_folderId, target_folderId) {
+
+  console.log("Moving File........")
+
+  return new Promise((resolve, reject) => {
+
+    const drive = google.drive({version: 'v3', auth: authClient});
+
+    drive.files.update({
+      fileId: fileId,
+      supportsAllDrives: true,
+      addParents: target_folderId,
+      removeParents: source_folderId
+    })
+    .then(res2 => {
+      console.log("File moved...");
+      console.log(res2);
+      resolve(res2);
+    })
+    .catch(err => reject(err))
+  })
+}
+exports.moveFile = moveFile
+
+async function moveAndRenameFile(authClient, oldFileName, newFileName, source_folderId, target_folderId) {
+
+  console.log("Moving File........")
+
+  return new Promise((resolve, reject) => {
+
+    const drive = google.drive({version: 'v3', auth: authClient});
+
+    drive.files.list({
+      q: `'${source_folderId}' in parents and name = '${oldFileName}'`, 
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
+      // driveId: '0AMmDAWFgfc9KUk9PVA'
+    }).then(res => {
+    
+      drive.files.update({
+        fileId: res.data.files[0].id,
+        supportsAllDrives: true,
+        addParents: target_folderId,
+        removeParents: source_folderId,
+        resource: {'name': newFileName}
+      })
+      .then(res2 => {
+        console.log("File moved and renamed...");
+        console.log(res2);
+        resolve(res2);
+      })
+      .catch(err => reject(err))
+    
+    })
+    .catch(err => reject(err))
+
+  })
+}
+exports.moveAndRenameFile = moveAndRenameFile
 
 
 // BEGIN Test Functions //

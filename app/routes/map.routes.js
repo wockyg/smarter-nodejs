@@ -8,5 +8,8 @@ module.exports = app => {
   // Retrieve lat/lon from address
   router.get("/fromAddress/:searchval", map.fromAddress);
 
+  // Retrieve directions
+  router.get("/directions/:searchval", map.getDirections);
+
   app.use('/api/map', router);
 };
