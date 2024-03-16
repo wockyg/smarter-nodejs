@@ -8,6 +8,9 @@ const V1500Rows = db.v1500Rows;
 const Client = db.clients;
 const Op = db.Sequelize.Op;
 
+const util = require('util')
+const unlinkFile = util.promisify(fs.unlink)
+
 const googledrive = require('../../GoogleDriveAPI');
 const nanonets = require('../../NanonetsAPI')
 
@@ -356,8 +359,12 @@ exports.uploadSmarterNanonets = async (req, res) => {
         const request = await Promise.all(
             req.files.map(file => {
                 const filepath = file.path
+                const filepathExt = `${file.path}.pdf`
                 console.warn("filepath:", filepath)
-                return nanonets.uploadV1500(`${filepath}.pdf`)
+                nanonets.uploadV1500(filepathExt).then(result => {
+                    unlinkFile(filepathExt);
+                    return result;
+                })
             })
         )
 
