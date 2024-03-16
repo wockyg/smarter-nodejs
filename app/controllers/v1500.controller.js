@@ -362,6 +362,7 @@ exports.uploadSmarterNanonets = async (req, res) => {
                 const filepathExt = `${file.path}.pdf`
                 console.warn("filepath:", filepath)
                 nanonets.uploadV1500(filepathExt).then(result => {
+                    console.log(result)
                     unlinkFile(filepathExt);
                     return result;
                 })
