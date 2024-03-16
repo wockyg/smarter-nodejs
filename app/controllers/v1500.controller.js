@@ -773,7 +773,7 @@ exports.webhookNanonets = async (req, res) => {
 
     // console.log(req.body)
 
-    const {prediction} = req.body.result[0].result
+    const {result: prediction} = req.body.result[0]
 
     console.log(prediction)
 
