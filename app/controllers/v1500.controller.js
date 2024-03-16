@@ -771,9 +771,11 @@ exports.webhookNanonets = async (req, res) => {
 
     console.warn("New extraction received...")
 
-    console.log(req.body)
+    // console.log(req.body)
 
-    // const {prediction} = req.body.result[0]
+    const {prediction} = req.body.result[0].result
+
+    console.log(prediction)
 
     // validate request body:
 
