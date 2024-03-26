@@ -918,7 +918,7 @@ exports.webhookNanonets = async (req, res) => {
         // no cpt rows in extracted data
     }
 
-    rows.forEach(r => {
+    rows.forEach(r => { 
         
         // make sure each row contains dos, cpt, unit, npi, diag
         if (!r.Date_of_service_from || !r.CPT__HCPCS || !r.Units || !r.Rendering_Provider_id || !r.Diagnosis_Pointer) {
@@ -1084,17 +1084,18 @@ exports.webhookNanonets = async (req, res) => {
 
     console.log("Moving file to Inbound...")
     console.warn("...................")
+    console.warn("PSYCH!!!!!!!!!!!! DOnex")
     // move file to Inbound folder and rename
-    googledrive.authorize()
-               .then(token => {
-                googledrive.moveAndRenameFile(token, filename, v1500_filename_initial, scan_folder_id, inbound_folder_id)
-                           .then(res => {
-                            console.warn("File moved...")
-                            console.warn(res)
-                           })
-                           .catch("move/rename BOOBOO STANK");
-               })
-               .catch("Auth BOOBOO STANK");
+    // googledrive.authorize()
+    //            .then(token => {
+    //             googledrive.moveAndRenameFile(token, filename, v1500_filename_initial, scan_folder_id, inbound_folder_id)
+    //                        .then(res => {
+    //                         console.warn("File moved...")
+    //                         console.warn(res)
+    //                        })
+    //                        .catch("move/rename BOOBOO STANK");
+    //            })
+    //            .catch("Auth BOOBOO STANK");
 
 };
 
