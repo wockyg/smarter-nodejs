@@ -413,7 +413,7 @@ exports.uploadSmarterNanonets = async (req, res) => {
         )
 
         console.log("Successfully uploaded to Nanonets...")
-        console.log(uploadsNanonets)
+        console.log(uploadsNanonets[i].data.result[0])
 
         // Post new v1500s to SMARTer
 
