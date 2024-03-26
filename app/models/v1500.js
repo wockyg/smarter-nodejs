@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     referralId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'referralsNotification',
         key: 'referralId'
@@ -27,14 +27,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    v1500_filename: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
-    d1500_filename: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
+    // v1500_filename: {
+    //   type: DataTypes.STRING(255),
+    //   allowNull: true
+    // },
+    // d1500_filename: {
+    //   type: DataTypes.STRING(255),
+    //   allowNull: true
+    // },
     original_filename: {
       type: DataTypes.STRING(255),
       allowNull: true

@@ -8,7 +8,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     referralId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     hcfaId: {
       type: DataTypes.INTEGER,
@@ -54,13 +54,27 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: true
     },
+    // v1500_filename: {
+    //   type: DataTypes.STRING(255),
+    //   allowNull: true
+    // },
+    // d1500_filename: {
+    //   type: DataTypes.STRING(255),
+    //   allowNull: true
+    // },
     v1500_filename: {
-      type: DataTypes.STRING(255),
-      allowNull: true
+      type: DataTypes.VIRTUAL,
+      get() {
+        const string = (this.claimant && this.original_dos) ? `${this.claimant} DOS ${this.original_dos}${this.page_count === 1 ? '_NoNotes' : ''}.pdf` : null
+        return string;
+      }
     },
     d1500_filename: {
-      type: DataTypes.STRING(255),
-      allowNull: true
+      type: DataTypes.VIRTUAL,
+      get() {
+        const string = (this.referralId && this.original_dos) ? `${this.claimant} ADJ DOS ${this.original_dos}.pdf` : null
+        return string;
+      }
     },
     original_filename: {
       type: DataTypes.STRING(255),
