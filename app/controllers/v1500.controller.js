@@ -842,249 +842,249 @@ exports.webhookNanonets = async (req, res) => {
     console.warn("New extraction received...")
     console.warn("...................")
 
-    console.log(req.body)
+    // console.log(req.body)
 
-    // if (req.body.message === 'failure') {
-    //     console.log("Extraction failed...")
-    //     console.log("Moving file to Fail foler...")
-    //     // move file to Fail(extraction) folder
-    //     return
-    // }
+    if (req.body.message === 'failure') {
+        console.log("Extraction failed...")
+        console.log("Moving file to Fail foler...")
+        // move file to Fail(extraction) folder
+        return
+    }
 
-    // const {prediction, input: filename, id, message} = req.body.result[0]
+    const {prediction, input: filename, id, message} = req.body.result
 
-    // // console.log(prediction)
+    // console.log(prediction)
 
-    // console.warn("filename:", filename)
-    // console.warn("...................")
+    console.warn("filename:", filename)
+    console.warn("...................")
 
-    // console.warn("Parsing response...")
-    // console.warn("...................")
+    console.warn("Parsing response...")
+    console.warn("...................")
     
 
-    // let values = {}
-    // let rows = []
-    // let diags = []
-    // const nums = [1,2,3,4,5,6]
+    let values = {}
+    let rows = []
+    let diags = []
+    const nums = [1,2,3,4,5,6]
 
-    // // parse repsonse
-    // prediction.forEach(p => {
+    // parse repsonse
+    prediction.forEach(p => {
 
-    //     // cpt rows
-    //     if (p.label === 'table') {
-    //         const {cells} = p
-    //         nums.forEach(r => {
-    //             let row = {}
-    //             cells.forEach(c => {
-    //                 if (c.row === r) {
-    //                     row[c.label] = c.label === 'Modifier' ? c.text.split(' ') : c.text
-    //                 }
-    //             })
-    //             if (Object.keys(row).length > 0) {
-    //                 rows.push(row)
-    //             }
-    //         })
-    //         values.rows = rows
-    //     }
-    //     // icd10 codes
-    //     else if (p.label === 'Diagnosis_codes') {
-    //         diags.push(p.ocr_text)
-    //     }
-    //     // main boxes
-    //     else {
-    //         values[p.label] = p.ocr_text
-    //     }
-    // })
+        // cpt rows
+        if (p.label === 'table') {
+            const {cells} = p
+            nums.forEach(r => {
+                let row = {}
+                cells.forEach(c => {
+                    if (c.row === r) {
+                        row[c.label] = c.label === 'Modifier' ? c.text.split(' ') : c.text
+                    }
+                })
+                if (Object.keys(row).length > 0) {
+                    rows.push(row)
+                }
+            })
+            values.rows = rows
+        }
+        // icd10 codes
+        else if (p.label === 'Diagnosis_codes') {
+            diags.push(p.ocr_text)
+        }
+        // main boxes
+        else {
+            values[p.label] = p.ocr_text
+        }
+    })
 
-    // values.diagnosis = diags
+    values.diagnosis = diags
 
-    // console.log(values)
+    console.log(values)
 
-    // // console.log(parsed);
-    // console.warn("Response parsed...")
-    // console.warn("...................")
-    // console.warn("Validating response...")
-    // console.warn("...................")
+    // console.log(parsed);
+    console.warn("Response parsed...")
+    console.warn("...................")
+    console.warn("Validating response...")
+    console.warn("...................")
 
-    // // validate response body:
+    // validate response body:
 
-    // // make sure claim number 1/2/3 are not all null
-    // if (!values.insureds_id_number && !values.Other_Claim_ID && !values.Prior_authorization_number) {
-    //     // no claim number present in extracted data
-    // }
+    // make sure claim number 1/2/3 are not all null
+    if (!values.insureds_id_number && !values.Other_Claim_ID && !values.Prior_authorization_number) {
+        // no claim number present in extracted data
+    }
 
-    // // make sure rows.length is not 0
-    // if (rows.length === 0) {
-    //     // no cpt rows in extracted data
-    // }
+    // make sure rows.length is not 0
+    if (rows.length === 0) {
+        // no cpt rows in extracted data
+    }
 
-    // rows.forEach(r => { 
+    rows.forEach(r => { 
         
-    //     // make sure each row contains dos, cpt, unit, npi, diag
-    //     if (!r.Date_of_service_from || !r.CPT__HCPCS || !r.Units || !r.Rendering_Provider_id || !r.Diagnosis_Pointer) {
-    //         // something is missing from the row
-    //     }
-    //     // make sure each dos is a date
-    //     const date = new Date(r.Date_of_service_from)
-    //     if (isNaN(date)) {
-    //         // not a date
-    //     }
-    //     // make sure npi's are exactly 10 digits
-    //     if (r.Rendering_Provider_id.length !== 10) {
-    //         // npi is not 10 digits
-    //     }
-    //     // make sure units is exactly 1 digit
-    //     if (r.Units.length !== 1) {
-    //         // units is not 1 digit
-    //     }
-    // })
+        // make sure each row contains dos, cpt, unit, npi, diag
+        if (!r.Date_of_service_from || !r.CPT__HCPCS || !r.Units || !r.Rendering_Provider_id || !r.Diagnosis_Pointer) {
+            // something is missing from the row
+        }
+        // make sure each dos is a date
+        const date = new Date(r.Date_of_service_from)
+        if (isNaN(date)) {
+            // not a date
+        }
+        // make sure npi's are exactly 10 digits
+        if (r.Rendering_Provider_id.length !== 10) {
+            // npi is not 10 digits
+        }
+        // make sure units is exactly 1 digit
+        if (r.Units.length !== 1) {
+            // units is not 1 digit
+        }
+    })
 
-    // // if any of the above fail, move file to fail folder and return (for now)
+    // if any of the above fail, move file to fail folder and return (for now)
 
-    // console.warn("Response validated...")
-    // console.warn("...................")
-    // console.warn("values:")
-    // console.warn("-------------------")
-    // console.log(values)
-    // console.warn("...................")
-    // console.warn("...................")
-    // console.warn("...................")
-    // console.warn("Checking claim_number for matches...")
-    // console.warn("...................")
+    console.warn("Response validated...")
+    console.warn("...................")
+    console.warn("values:")
+    console.warn("-------------------")
+    console.log(values)
+    console.warn("...................")
+    console.warn("...................")
+    console.warn("...................")
+    console.warn("Checking claim_number for matches...")
+    console.warn("...................")
 
-    // // get referralId using claimNumber
-    // let claim_number = values.Insureds_ID_number;
-    // // const today = new Date().toISOString();
+    // get referralId using claimNumber
+    let claim_number = values.Insureds_ID_number;
+    // const today = new Date().toISOString();
 
-    // // check for matches in referral table
-    // let matches = await ReferralView.findAll({ where: { claimNumber: claim_number, billingStatus: "Active" } })
+    // check for matches in referral table
+    let matches = await ReferralView.findAll({ where: { claimNumber: claim_number, billingStatus: "Active" } })
 
-    // // // if no matches, check against 2nd/3rd claim# fields
-    // if (matches.length === 0) {
-    //     claim_number = values.Other_Claim_ID;
-    //     matches = await ReferralView.findAll({ where: { claimNumber: claim_number, billingStatus: "Active" } })
-    //     if (matches.length === 0) {
-    //         claim_number = values.Prior_authorization_number;
-    //         matches = await ReferralView.findAll({ where: { claimNumber: claim_number, billingStatus: "Active" } })
-    //         if (matches.length === 0) {
-    //             // no matches, fail and return
-    //         }
-    //     }
-    // }
+    // // if no matches, check against 2nd/3rd claim# fields
+    if (matches.length === 0) {
+        claim_number = values.Other_Claim_ID;
+        matches = await ReferralView.findAll({ where: { claimNumber: claim_number, billingStatus: "Active" } })
+        if (matches.length === 0) {
+            claim_number = values.Prior_authorization_number;
+            matches = await ReferralView.findAll({ where: { claimNumber: claim_number, billingStatus: "Active" } })
+            if (matches.length === 0) {
+                // no matches, fail and return
+            }
+        }
+    }
 
-    // console.warn(matches.length + " match(es)...")
-    // console.warn("...................")
+    console.warn(matches.length + " match(es)...")
+    console.warn("...................")
 
-    // const selectedClaim = matches.length === 1 ? matches[0] : null;
+    const selectedClaim = matches.length === 1 ? matches[0] : null;
 
-    // const temp = rows.sort((a, b) => {
-    //                     if (a.dos === null){
-    //                         return 1;
-    //                     }
-    //                     if (b.dos === null){
-    //                         return -1;
-    //                     }
-    //                     if (a.dos === b.dos){
-    //                         return 0;
-    //                     }
-    //                     return a.dos < b.dos ? -1 : 1;
-    //                 });
+    const temp = rows.sort((a, b) => {
+                        if (a.dos === null){
+                            return 1;
+                        }
+                        if (b.dos === null){
+                            return -1;
+                        }
+                        if (a.dos === b.dos){
+                            return 0;
+                        }
+                        return a.dos < b.dos ? -1 : 1;
+                    });
 
-    // const dos_array = temp?.map(r => `${(new Date(r.Date_of_service_from).getMonth() + 1) < 10 ? `0${new Date(r.Date_of_service_from).getMonth() + 1}` : `${new Date(r.Date_of_service_from).getMonth() + 1}`}-${(new Date(r.Date_of_service_from).getDate() + 1) < 10 ? `0${new Date(r.Date_of_service_from).getDate() + 1}` : `${new Date(r.Date_of_service_from).getDate() + 1}`}-${new Date(r.Date_of_service_from).getFullYear()}`);
-    // const uniqueDOS = Array.from(new Set(dos_array));
-    // const uniqueDOSString = `${uniqueDOS[0]}${uniqueDOS.length > 1 ? `, ${uniqueDOS[1]}` : ''}${uniqueDOS.length > 2 ? `, ${uniqueDOS[2]}` : ''}${uniqueDOS.length > 3 ? `, ${uniqueDOS[3]}` : ''}${uniqueDOS.length > 4 ? `, ${uniqueDOS[4]}` : ''}${uniqueDOS.length > 5 ? `, ${uniqueDOS[5]}` : ''}` 
-    // const v1500_filename_initial = `${matches[0].claimant} DOS ${uniqueDOSString}.pdf`
-    // // const d1500_filename = `${matches[0].claimant} ADJ DOS ${uniqueDOSString}.pdf` : null
+    const dos_array = temp?.map(r => `${(new Date(r.Date_of_service_from).getMonth() + 1) < 10 ? `0${new Date(r.Date_of_service_from).getMonth() + 1}` : `${new Date(r.Date_of_service_from).getMonth() + 1}`}-${(new Date(r.Date_of_service_from).getDate() + 1) < 10 ? `0${new Date(r.Date_of_service_from).getDate() + 1}` : `${new Date(r.Date_of_service_from).getDate() + 1}`}-${new Date(r.Date_of_service_from).getFullYear()}`);
+    const uniqueDOS = Array.from(new Set(dos_array));
+    const uniqueDOSString = `${uniqueDOS[0]}${uniqueDOS.length > 1 ? `, ${uniqueDOS[1]}` : ''}${uniqueDOS.length > 2 ? `, ${uniqueDOS[2]}` : ''}${uniqueDOS.length > 3 ? `, ${uniqueDOS[3]}` : ''}${uniqueDOS.length > 4 ? `, ${uniqueDOS[4]}` : ''}${uniqueDOS.length > 5 ? `, ${uniqueDOS[5]}` : ''}` 
+    const v1500_filename_initial = `${matches[0].claimant} DOS ${uniqueDOSString}.pdf`
+    // const d1500_filename = `${matches[0].claimant} ADJ DOS ${uniqueDOSString}.pdf` : null
 
-    // // Create new v1500 payload obj
-    // const v1500 = {
-    //     method: 'nanonets',
-    //     referralId: selectedClaim ? selectedClaim.referralId : null,
-    //     claim_number: claim_number || null,
-    //     physician_name: values.Name_of_referring_provider || null,
-    //     physician_npi: values.Referring_provider_NPI || null,
-    //     patient_account_no: values.Patients_account_number || null,
-    //     diagnosis_a: diags[0] || null,
-    //     diagnosis_b: diags[1] || null,
-    //     diagnosis_c: diags[2] || null,
-    //     diagnosis_d: diags[3] || null,
-    //     diagnosis_e: diags[4] || null,
-    //     diagnosis_f: diags[5] || null,
-    //     diagnosis_g: diags[6] || null,
-    //     diagnosis_h: diags[7] || null,
-    //     diagnosis_i: diags[8] || null,
-    //     diagnosis_j: diags[9] || null,
-    //     diagnosis_k: diags[10] || null,
-    //     diagnosis_l: diags[11] || null,
-    //     // d1500_filename: d1500_filename,
-    //     // v1500_filename: v1500_filename,
-    //     original_dos: uniqueDOSString,
-    //     num_matches: matches.length,
-    //     extractionStatus: message,
-    // };
+    // Create new v1500 payload obj
+    const v1500 = {
+        method: 'nanonets',
+        referralId: selectedClaim ? selectedClaim.referralId : null,
+        claim_number: claim_number || null,
+        physician_name: values.Name_of_referring_provider || null,
+        physician_npi: values.Referring_provider_NPI || null,
+        patient_account_no: values.Patients_account_number || null,
+        diagnosis_a: diags[0] || null,
+        diagnosis_b: diags[1] || null,
+        diagnosis_c: diags[2] || null,
+        diagnosis_d: diags[3] || null,
+        diagnosis_e: diags[4] || null,
+        diagnosis_f: diags[5] || null,
+        diagnosis_g: diags[6] || null,
+        diagnosis_h: diags[7] || null,
+        diagnosis_i: diags[8] || null,
+        diagnosis_j: diags[9] || null,
+        diagnosis_k: diags[10] || null,
+        diagnosis_l: diags[11] || null,
+        // d1500_filename: d1500_filename,
+        // v1500_filename: v1500_filename,
+        original_dos: uniqueDOSString,
+        num_matches: matches.length,
+        extractionStatus: message,
+    };
 
-    // console.warn("Posting to SMARTer...")
-    // console.warn("...................")
-    // console.log(v1500)
-    // console.warn("...................")
+    console.warn("Posting to SMARTer...")
+    console.warn("...................")
+    console.log(v1500)
+    console.warn("...................")
     
-    // // Update v1500 database entry with extraction results
-    // const num = await V1500.update(v1500, {where: {extractionId: id}})
+    // Update v1500 database entry with extraction results
+    const num = await V1500.update(v1500, {where: {extractionId: id}})
 
-    // if (num === 0) {
-    //     console.warn("Something went wrong...")
-    //     console.warn("Moving file to fail folder...")
-    //     // TODO - move file to Fail folder
-    //     return
-    // }
+    if (num === 0) {
+        console.warn("Something went wrong...")
+        console.warn("Moving file to fail folder...")
+        // TODO - move file to Fail folder
+        return
+    }
 
-    // const newV1500 = await V1500View.findAll({where: {extractionId: id}})
+    const newV1500 = await V1500View.findAll({where: {extractionId: id}})
 
-    // const {v1500Id} = newV1500[0]
+    const {v1500Id} = newV1500[0]
     
-    // console.warn("newV1500:");
-    // console.warn(newV1500[0]);
+    console.warn("newV1500:");
+    console.warn(newV1500[0]);
 
-    // // insert cpt rows in database
-    // const newRows = await Promise.all(
-    //     rows.map((row => {
-    //         // append hcfaId to payload object
-    //         const values = {
-    //             v1500Id: v1500Id, 
-    //             dos: row.Date_of_service_from || null,
-    //             pos: row.Place_Of_Service || '11',
-    //             cpt: row.CPT__HCPCS || null,
-    //             mod1: row.Modifier[0] || null,
-    //             mod2: row.Modifier[1] || null,
-    //             mod3: row.Modifier[2] || null,
-    //             mod4: row.Modifier[3] || null,
-    //             diag: row.Diagnosis_Pointer || null,
-    //             units: row.Units || null,
-    //             charges: row.Charges || null,
-    //             provider_npi: row.Rendering_Provider_id || null
-    //         };
-    //         // insert row data into DB
-    //         return V1500Rows.create(values);
-    //     }))
-    // )
+    // insert cpt rows in database
+    const newRows = await Promise.all(
+        rows.map((row => {
+            // append hcfaId to payload object
+            const values = {
+                v1500Id: v1500Id, 
+                dos: row.Date_of_service_from || null,
+                pos: row.Place_Of_Service || '11',
+                cpt: row.CPT__HCPCS || null,
+                mod1: row.Modifier[0] || null,
+                mod2: row.Modifier[1] || null,
+                mod3: row.Modifier[2] || null,
+                mod4: row.Modifier[3] || null,
+                diag: row.Diagnosis_Pointer || null,
+                units: row.Units || null,
+                charges: row.Charges || null,
+                provider_npi: row.Rendering_Provider_id || null
+            };
+            // insert row data into DB
+            return V1500Rows.create(values);
+        }))
+    )
 
-    // console.warn("newRows:");
-    // console.warn(newRows);
+    console.warn("newRows:");
+    console.warn(newRows);
 
-    // if (selectedClaim) {
-    //     // update v1500 in SMARTer billing table
-    //     const numUpdated = await Promise.all(
-    //         uniqueDOS.map(d => {
-    //             return Visit.update({v1500: today}, {where: {referralId: selectedClaim.referralId, dos: d}})
-    //         })
-    //     )
-    //     console.log(`v1500 field updated for ${numUpdated.length} visits.`)
-    // }
+    if (selectedClaim) {
+        // update v1500 in SMARTer billing table
+        const numUpdated = await Promise.all(
+            uniqueDOS.map(d => {
+                return Visit.update({v1500: today}, {where: {referralId: selectedClaim.referralId, dos: d}})
+            })
+        )
+        console.log(`v1500 field updated for ${numUpdated.length} visits.`)
+    }
     
 
-    // console.log("Moving file to Inbound...")
-    // console.warn("...................")
-    // console.warn("PSYCH!!!!!!!!!!!! DOnex")
+    console.log("Moving file to Inbound...")
+    console.warn("...................")
+    console.warn("PSYCH!!!!!!!!!!!! DOnex")
     // move file to Inbound folder and rename
     // googledrive.authorize()
     //            .then(token => {
