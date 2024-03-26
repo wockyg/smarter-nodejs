@@ -413,7 +413,7 @@ exports.uploadSmarterNanonets = async (req, res) => {
         )
 
         console.log("Successfully uploaded to Nanonets...")
-        console.log(uploadsNanonets[0].data.result[0])
+        // console.log(uploadsNanonets[0].data.result[0])
 
         // Post new v1500s to SMARTer
 
@@ -422,7 +422,7 @@ exports.uploadSmarterNanonets = async (req, res) => {
         const uploadsSmarter = await Promise.all(
             req.files.map((file, i) => {
                 const v1500 = {
-                    extractionId: uploadsNanonets[i].data.result[0].id || -1,
+                    extractionId: uploadsNanonets[i].data.result[0].request_file_id || -1,
                     original_filename: file.originalname,
                     extractionStatus: 'pending',
                     method: 'nanonets',
