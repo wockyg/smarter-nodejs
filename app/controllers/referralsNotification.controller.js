@@ -1,6 +1,12 @@
 const db = require("../models");
 const Referral = db.referrals;
+const Adjuster = db.adjusters;
+const Therapist = db.therapists;
 const Op = db.Sequelize.Op;
+
+const emailjs = require('@emailjs/nodejs');
+
+const path = 'https://smarter-one.vercel.app';
 
 
 // Create and Save a new referral
@@ -53,6 +59,50 @@ exports.create = (req, res) => {
   // Save referral in the database
   Referral.create(referral)
     .then(data => {
+        if (referral.service.includes('FCE') || referral.service.includes('PPD')) {
+            let missing = false
+            // query adjuster
+            Adjuster.findByPk(referral.adjusterId).then(a => {
+                // if adjuster rate missing then send email to KF
+                if (referral.service.includes('FCE') && !a.fceRate) {
+                    missing = true;
+                }
+                if (referral.service.includes('PPD') && !a.ppdRate) {
+                    missing = true;
+                }
+                if (referral.service === 'FCE | PPD' && !a.ppdDiscountRate) {
+                    missing = true;
+                }
+                if (missing) {
+
+                    const body = `
+                        <html>
+                            <body>
+                                <h2>Click <a href="${path}/${data.referralId}">here</a> to view in SMARTer</h2>
+                            </body>
+                        </html>
+                    `;
+
+                    const params = {
+                        to_email: "wmcclure@definedpt.com",
+                        // to_email: "kfulton@definedpt.com",
+                        // cc_email: "wmcclure@definedpt.com",
+                        subject: `Missing Adj Rate (${referral.service})`,
+                        message: body
+                    };
+
+                    emailjs.send('service_zl67u0w', 'template_a7ve3kt', params, {publicKey: '0mive5-lH56wNnNf7', privateKey: 'T8DWBUrOBVTit5NO7UhTo'})
+                            .then((res) => {
+                                // console.log(res.status, res.text);
+                                // console.log(params);
+                                console.log(`Done.`);
+                                return(200);
+                            }, (err) => {
+                                console.log(err.text);
+                    });
+                }
+            })
+        }
       res.send(data);
     })
     .catch(err => {
@@ -108,6 +158,8 @@ exports.findOne = (req, res) => {
 exports.update = (req, res) => {
     const id = req.params.id;
 
+    let missingRates = false;
+
     console.log("params:", req.params); 
 
     Referral.update(req.body, {
@@ -115,6 +167,66 @@ exports.update = (req, res) => {
     })
         .then(num => {
         if (num == 1) {
+            // if req.body.confirmLetterToClaimant or req.body.confirmLetterToAdjuster or req.body.medNotesToPT then query referral
+            if (req.body.confirmLetterToClaimant || req.body.confirmLetterToAdjuster || req.body.medNotesToPT) {
+                Referral.findByPk(id).then(referral => {
+                    // if referralStatus = 'Complete' then query therapist
+                    if (referral.referralStatus === 'Complete') {
+                        Therapist.findByPk(referral.therapistId).then(therapist => {
+                            // if therapist rates missing then send email to WM
+
+                            if (referral.service.includes('DPT')) {
+                                if (referral.service.includes('WC') || referral.service.includes('WH')) {
+                                    if (!therapist.wcwhFirst2Hrs || !therapist.wcwhAdditionalHour) {
+                                        missingRates = true
+                                    }
+                                }
+                                else {
+                                    if (!therapist.dailyRate || !therapist.evalRate || !therapist.combinedRate) {
+                                        missingRates = true
+                                    }
+                                }
+                            }
+                            else if (referral.service.includes('FCE') && !therapist.fceRate) {
+                                missingRates = true
+                            }
+                            else if (referral.service.includes('PPD') && !therapist.ppdRate) {
+                                missingRates = true
+                            }
+
+                            if (missingRates) {
+                                
+                                // Referral.update({missingRates: true}, {where: {referralId: id}})
+
+                                const body = `
+                                    <html>
+                                        <body>
+                                            <h2>Click <a href="${path}/${data.referralId}">here</a> to view in SMARTer</h2>
+                                        </body>
+                                    </html>
+                                `;
+
+                                const params = {
+                                    to_email: "wmcclure@definedpt.com",
+                                    subject: `Missing PT Rate (${referral.service})`,
+                                    message: body
+                                };
+
+                                emailjs.send('service_zl67u0w', 'template_a7ve3kt', params, {publicKey: '0mive5-lH56wNnNf7', privateKey: 'T8DWBUrOBVTit5NO7UhTo'})
+                                        .then((res) => {
+                                            // console.log(res.status, res.text);
+                                            // console.log(params);
+                                            console.log(`Done.`);
+                                            return(200);
+                                        }, (err) => {
+                                            console.log(err.text);
+                                });
+
+                            }
+                        })
+                    }
+                })
+            }
             res.send({
             message: "referral was updated successfully."
             });
