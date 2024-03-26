@@ -954,7 +954,7 @@ exports.webhookNanonets = async (req, res) => {
 
     // get referralId using claimNumber
     let claim_number = values.Insureds_ID_number;
-    // const today = new Date().toISOString();
+    const today = new Date().toISOString();
 
     // check for matches in referral table
     let matches = await ReferralView.findAll({ where: { claimNumber: claim_number, billingStatus: "Active" } })
