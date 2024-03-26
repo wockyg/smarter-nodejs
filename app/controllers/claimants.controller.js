@@ -44,13 +44,14 @@ exports.create = (req, res) => {
         // Save claimant in the database
         Claimant.create(claimant)
             .then(data => {
-            res.send(data);
+                // TODO crete folder in Patient Directory
+                res.send(data);
             })
             .catch(err => {
-            res.status(500).send({
-                message:
-                err.message || "Some error occurred while creating the claimant."
-            });
+                res.status(500).send({
+                    message:
+                    err.message || "Some error occurred while creating the claimant."
+                });
             });
     })
   

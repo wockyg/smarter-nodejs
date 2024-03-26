@@ -61,6 +61,21 @@ exports.delete = (req, res) => {
         });
 };
 
+// Find all flagged notes for a referralId
+exports.findFlagged = (req, res) => {
+    const id = req.params.id
+    ReferralNote.findAll({ where: { referralId: id, flag: 'Important' } })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving flagged referral notes."
+      });
+    });
+};
+
 // Find all notes for a referralId
 exports.findReferralNotes = (req, res) => {
     const id = req.params.id

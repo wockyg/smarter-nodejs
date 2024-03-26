@@ -4,8 +4,11 @@ module.exports = app => {
 
   var router = require("express").Router();
 
-  // Create a new adjuster
+  // Create a new note
   router.post("/", referralNotes.create);
+
+  // Retrieve all flagged notes for a referralId
+  router.get("/flagged/:id", referralNotes.findFlagged);
 
   // Retrieve all notes for a referralId
   router.get("/:id", referralNotes.findReferralNotes);
