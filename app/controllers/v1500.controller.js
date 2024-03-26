@@ -1031,6 +1031,8 @@ exports.webhookNanonets = async (req, res) => {
     // Update v1500 database entry with extraction results
     const num = await V1500.update(v1500, {where: {extractionId: id}})
 
+    console.warn("V1500 updated in SMARTer...")
+
     if (num === 0) {
         console.warn("Something went wrong...")
         console.warn("Moving file to fail folder...")
@@ -1038,53 +1040,55 @@ exports.webhookNanonets = async (req, res) => {
         return
     }
 
-    const newV1500 = await V1500View.findAll({where: {extractionId: id}})
+    console.warn("Querying V1500 in SMARTer...")
 
-    const {v1500Id} = newV1500[0]
+    const newV1500 = await V1500View.findAll({where: {extractionId: id}})
     
     console.warn("newV1500:");
-    console.warn(newV1500[0]);
+    console.warn(newV1500);
 
-    // insert cpt rows in database
-    const newRows = await Promise.all(
-        rows.map((row => {
-            // append hcfaId to payload object
-            const values = {
-                v1500Id: v1500Id, 
-                dos: row.Date_of_service_from || null,
-                pos: row.Place_Of_Service || '11',
-                cpt: row.CPT__HCPCS || null,
-                mod1: row.Modifier[0] || null,
-                mod2: row.Modifier[1] || null,
-                mod3: row.Modifier[2] || null,
-                mod4: row.Modifier[3] || null,
-                diag: row.Diagnosis_Pointer || null,
-                units: row.Units || null,
-                charges: row.Charges || null,
-                provider_npi: row.Rendering_Provider_id || null
-            };
-            // insert row data into DB
-            return V1500Rows.create(values);
-        }))
-    )
+    // const {v1500Id} = newV1500[0]
 
-    console.warn("newRows:");
-    console.warn(newRows);
+    // // insert cpt rows in database
+    // const newRows = await Promise.all(
+    //     rows.map((row => {
+    //         // append hcfaId to payload object
+    //         const values = {
+    //             v1500Id: v1500Id, 
+    //             dos: row.Date_of_service_from || null,
+    //             pos: row.Place_Of_Service || '11',
+    //             cpt: row.CPT__HCPCS || null,
+    //             mod1: row.Modifier[0] || null,
+    //             mod2: row.Modifier[1] || null,
+    //             mod3: row.Modifier[2] || null,
+    //             mod4: row.Modifier[3] || null,
+    //             diag: row.Diagnosis_Pointer || null,
+    //             units: row.Units || null,
+    //             charges: row.Charges || null,
+    //             provider_npi: row.Rendering_Provider_id || null
+    //         };
+    //         // insert row data into DB
+    //         return V1500Rows.create(values);
+    //     }))
+    // )
 
-    if (selectedClaim) {
-        // update v1500 in SMARTer billing table
-        const numUpdated = await Promise.all(
-            uniqueDOS.map(d => {
-                return Visit.update({v1500: today}, {where: {referralId: selectedClaim.referralId, dos: d}})
-            })
-        )
-        console.log(`v1500 field updated for ${numUpdated.length} visits.`)
-    }
+    // console.warn("newRows:");
+    // console.warn(newRows);
+
+    // if (selectedClaim) {
+    //     // update v1500 in SMARTer billing table
+    //     const numUpdated = await Promise.all(
+    //         uniqueDOS.map(d => {
+    //             return Visit.update({v1500: today}, {where: {referralId: selectedClaim.referralId, dos: d}})
+    //         })
+    //     )
+    //     console.log(`v1500 field updated for ${numUpdated.length} visits.`)
+    // }
     
 
     console.log("Moving file to Inbound...")
     console.warn("...................")
-    console.warn("PSYCH!!!!!!!!!!!! DOnex")
+    console.warn("PSYCH!!!!!!!!!!!! DOne!")
     // move file to Inbound folder and rename
     // googledrive.authorize()
     //            .then(token => {
