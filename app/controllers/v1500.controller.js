@@ -1024,6 +1024,7 @@ exports.webhookNanonets = async (req, res) => {
     };
 
     console.warn("Posting to SMARTer...")
+    console.warn("id:", id)
     console.warn("...................")
     console.log(v1500)
     console.warn("...................")
@@ -1031,7 +1032,7 @@ exports.webhookNanonets = async (req, res) => {
     // Update v1500 database entry with extraction results
     const num = await V1500.update(v1500, {where: {extractionId: id}})
 
-    console.warn("V1500 updated in SMARTer...")
+    console.warn(num, " rows updated in SMARTer...")
 
     if (num === 0) {
         console.warn("Something went wrong...")
