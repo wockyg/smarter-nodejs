@@ -1048,43 +1048,43 @@ exports.webhookNanonets = async (req, res) => {
     console.warn("newV1500:");
     console.warn(newV1500);
 
-    // const {v1500Id} = newV1500[0]
+    const {v1500Id} = newV1500[0]
 
-    // // insert cpt rows in database
-    // const newRows = await Promise.all(
-    //     rows.map((row => {
-    //         // append hcfaId to payload object
-    //         const values = {
-    //             v1500Id: v1500Id, 
-    //             dos: row.Date_of_service_from || null,
-    //             pos: row.Place_Of_Service || '11',
-    //             cpt: row.CPT__HCPCS || null,
-    //             mod1: row.Modifier[0] || null,
-    //             mod2: row.Modifier[1] || null,
-    //             mod3: row.Modifier[2] || null,
-    //             mod4: row.Modifier[3] || null,
-    //             diag: row.Diagnosis_Pointer || null,
-    //             units: row.Units || null,
-    //             charges: row.Charges || null,
-    //             provider_npi: row.Rendering_Provider_id || null
-    //         };
-    //         // insert row data into DB
-    //         return V1500Rows.create(values);
-    //     }))
-    // )
+    // insert cpt rows in database
+    const newRows = await Promise.all(
+        rows.map((row => {
+            // append hcfaId to payload object
+            const values = {
+                v1500Id: v1500Id, 
+                dos: row.Date_of_service_from || null,
+                pos: row.Place_Of_Service || '11',
+                cpt: row.CPT__HCPCS || null,
+                mod1: row.Modifier[0] || null,
+                mod2: row.Modifier[1] || null,
+                mod3: row.Modifier[2] || null,
+                mod4: row.Modifier[3] || null,
+                diag: row.Diagnosis_Pointer || null,
+                units: row.Units || null,
+                charges: row.Charges || null,
+                provider_npi: row.Rendering_Provider_id || null
+            };
+            // insert row data into DB
+            return V1500Rows.create(values);
+        }))
+    )
 
-    // console.warn("newRows:");
-    // console.warn(newRows);
+    console.warn("newRows:");
+    console.warn(newRows);
 
-    // if (selectedClaim) {
-    //     // update v1500 in SMARTer billing table
-    //     const numUpdated = await Promise.all(
-    //         uniqueDOS.map(d => {
-    //             return Visit.update({v1500: today}, {where: {referralId: selectedClaim.referralId, dos: d}})
-    //         })
-    //     )
-    //     console.log(`v1500 field updated for ${numUpdated.length} visits.`)
-    // }
+    if (selectedClaim) {
+        // update v1500 in SMARTer billing table
+        const numUpdated = await Promise.all(
+            uniqueDOS.map(d => {
+                return Visit.update({v1500: today}, {where: {referralId: selectedClaim.referralId, dos: d}})
+            })
+        )
+        console.log(`v1500 field updated for ${numUpdated.length} visits.`)
+    }
     
 
     console.log("Moving file to Inbound...")
