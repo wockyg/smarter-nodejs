@@ -342,7 +342,7 @@ exports.uploadSmarterNanonets = async (req, res) => {
 
     // TEST CODE
     // ----------
-    // console.warn(req.files[0]);
+    console.warn(req.files[0]);
     // res.sendStatus(200)
     // ----------
     // PSEUDO CODE
