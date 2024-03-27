@@ -15,7 +15,7 @@ async function authorize() {
     process.env.GOOGLE_CLIENT_EMAIL,
     null,
     // apikey.private_key,
-    process.env.GOOGLE_PRIVATE_KEY,
+    process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
     SCOPE
   );
   console.log('GOOGLE_CLIENT_EMAIL: ', process.env.GOOGLE_CLIENT_EMAIL)
