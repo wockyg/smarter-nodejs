@@ -1069,12 +1069,12 @@ exports.webhookNanonets = async (req, res) => {
     googledrive.authorize()
                .then(token => {
                 console.log(token)
-                // googledrive.moveAndRenameFile(token, filename, v1500_filename_initial, scan_folder_id, inbound_folder_id)
-                //            .then(res => {
-                //             console.warn("File moved...")
-                //             console.warn(res)
-                //            })
-                //            .catch("move/rename BOOBOO STANK");
+                googledrive.moveAndRenameFile(token, filename, v1500_filename_initial, scan_folder_id, inbound_folder_id)
+                           .then(res => {
+                            console.warn("File moved...")
+                            console.warn(res)
+                           })
+                           .catch("move/rename BOOBOO STANK");
                })
                .catch("Auth BOOBOO STANK");
 
