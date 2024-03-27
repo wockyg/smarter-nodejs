@@ -1068,7 +1068,7 @@ exports.webhookNanonets = async (req, res) => {
     // move file to Inbound folder and rename
     googledrive.authorize()
                .then(token => {
-                console.log(token)
+                // console.log(token)
                 googledrive.moveAndRenameFile(token, filename, v1500_filename_initial, scan_folder_id, inbound_folder_id)
                            .then(res => {
                             console.warn("File moved...")

@@ -184,20 +184,22 @@ async function moveAndRenameFile(authClient, oldFileName, newFileName, source_fo
       includeItemsFromAllDrives: true,
       // driveId: '0AMmDAWFgfc9KUk9PVA'
     }).then(res => {
+
+      console.log(res)
     
-      drive.files.update({
-        fileId: res.data.files[0].id,
-        supportsAllDrives: true,
-        addParents: target_folderId,
-        removeParents: source_folderId,
-        resource: {'name': newFileName}
-      })
-      .then(res2 => {
-        console.log("File moved and renamed...");
-        console.log(res2);
-        resolve(res2);
-      })
-      .catch(err => reject(err))
+      // drive.files.update({
+      //   fileId: res.data.files[0].id,
+      //   supportsAllDrives: true,
+      //   addParents: target_folderId,
+      //   removeParents: source_folderId,
+      //   resource: {'name': newFileName}
+      // })
+      // .then(res2 => {
+      //   console.log("File moved and renamed...");
+      //   console.log(res2);
+      //   resolve(res2);
+      // })
+      // .catch(err => reject(err))
     
     })
     .catch(err => reject(err))
