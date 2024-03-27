@@ -1080,10 +1080,11 @@ exports.webhookNanonets = async (req, res) => {
         // update v1500 in SMARTer billing table
         const numUpdated = await Promise.all(
             uniqueDOS.map(d => {
-                return Visit.update({v1500: today}, {where: {referralId: selectedClaim.referralId, dos: d}})
+                console.log("d:", d)
+                return Visit.update({v1500: today}, {where: {referralId: selectedClaim.referralId, dos: new Date(d)}})
             })
         )
-        console.log(`v1500 field updated for ${numUpdated.length} visits.`)
+        console.log(`v1500 field updated for ${numUpdated} visits.`)
     }
     
 
