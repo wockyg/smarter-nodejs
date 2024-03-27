@@ -343,7 +343,7 @@ exports.uploadSmarterNanonets = async (req, res) => {
     // TEST CODE
     // ----------
     // console.warn(req.files[0]);
-    // res.status(200).send({message: `Voila! ${req.files.length || 'Noooooooo'} files uploaded`});
+    // res.sendStatus(200)
     // ----------
     // PSEUDO CODE
     // validate request body
@@ -378,31 +378,27 @@ exports.uploadSmarterNanonets = async (req, res) => {
         console.log("New Upload...")
         console.log(`${n} files...`)
 
-        console.log("Counting pages...")
 
+        console.log("Counting pages...")
         const pages = await Promise.all(
             req.files.map((f, i) => {
                 const pdfBuffer = fs.readFileSync(req.files[i].path);
                 return pageCount.PdfCounter.count(pdfBuffer);
             })
         )
-        
         console.log(pages)
-
         console.log("Done counting pages...")
         
+        // Add .pdf to filename
         console.log("Adding .pdf to filename...")
         req.files.forEach(f => {
             fs.rename(f.path, `${f.path}.pdf`)
         })
         console.log("Done adding .pdf to filename...")
 
-        // res.sendStatus(200)  // temp
 
         // Post files to Nanonets
-
         console.log("Uploading to Nanonets...")
-
         const uploadsNanonets = await Promise.all(
             req.files.map((file, i) => {
                 const filepath = file.path
@@ -411,14 +407,11 @@ exports.uploadSmarterNanonets = async (req, res) => {
                 return nanonets.uploadV1500(filepathExt)
             })
         )
-
         console.log("Successfully uploaded to Nanonets...")
-        // console.log(uploadsNanonets[0].data.result[0])
+
 
         // Post new v1500s to SMARTer
-
         console.log("Posting to SMARTer...")
-
         const uploadsSmarter = await Promise.all(
             req.files.map((file, i) => {
                 const v1500 = {
@@ -433,23 +426,19 @@ exports.uploadSmarterNanonets = async (req, res) => {
                 return V1500.create(v1500)
             })
         )
-
         console.log("Successfully posted to SMARTer...")
-        // console.log(uploadsSmarter)
+
 
         // unlink files
         console.log("Unlinking files...")
-
         req.files.forEach(f => {
-            // console.log("Unlinking file...")
             const filepathExt = `${f.path}.pdf`
             unlinkFile(filepathExt);
             console.log(filepathExt)
-            // console.log("File unlinked...")
         })
-
         console.log("Files unlinked...")
 
+        // return new v1500 table entries
         res.send(uploadsSmarter)
 
     } catch (error) {
@@ -840,7 +829,6 @@ exports.webhookNanonets = async (req, res) => {
     const fail_folder_id = process.env.FAIL_FOLDER_ID
 
     console.warn("New extraction received...")
-    console.warn("...................")
 
     // console.log(req.body)
 
@@ -853,13 +841,9 @@ exports.webhookNanonets = async (req, res) => {
 
     const {prediction, input: filename, id, message} = req.body.result
 
-    // console.log(prediction)
-
     console.warn("filename:", filename)
-    console.warn("...................")
 
     console.warn("Parsing response...")
-    console.warn("...................")
     
 
     let values = {}
@@ -898,13 +882,8 @@ exports.webhookNanonets = async (req, res) => {
 
     values.diagnosis = diags
 
-    console.log(values)
-
-    // console.log(parsed);
     console.warn("Response parsed...")
-    console.warn("...................")
     console.warn("Validating response...")
-    console.warn("...................")
 
     // validate response body:
 
@@ -942,15 +921,9 @@ exports.webhookNanonets = async (req, res) => {
     // if any of the above fail, move file to fail folder and return (for now)
 
     console.warn("Response validated...")
-    console.warn("...................")
-    console.warn("values:")
-    console.warn("-------------------")
-    console.log(values)
-    console.warn("...................")
-    console.warn("...................")
-    console.warn("...................")
+    // console.warn("values:")
+    // console.log(values)
     console.warn("Checking claim_number for matches...")
-    console.warn("...................")
 
     // get referralId using claimNumber
     let claim_number = values.Insureds_ID_number;
@@ -973,7 +946,6 @@ exports.webhookNanonets = async (req, res) => {
     }
 
     console.warn(matches.length + " match(es)...")
-    console.warn("...................")
 
     const selectedClaim = matches.length === 1 ? matches[0] : null;
 
@@ -1028,10 +1000,7 @@ exports.webhookNanonets = async (req, res) => {
     };
 
     console.warn("Posting to SMARTer...")
-    console.warn("id:", id)
-    console.warn("...................")
     console.log(v1500)
-    console.warn("...................")
     
     // Update v1500 database entry with extraction results
     const num = await V1500.update(v1500, {where: {extractionId: id}})
@@ -1097,16 +1066,16 @@ exports.webhookNanonets = async (req, res) => {
     console.warn("...................")
     console.warn("PSYCH!!!!!!!!!!!! DOne!")
     // move file to Inbound folder and rename
-    // googledrive.authorize()
-    //            .then(token => {
-    //             googledrive.moveAndRenameFile(token, filename, v1500_filename_initial, scan_folder_id, inbound_folder_id)
-    //                        .then(res => {
-    //                         console.warn("File moved...")
-    //                         console.warn(res)
-    //                        })
-    //                        .catch("move/rename BOOBOO STANK");
-    //            })
-    //            .catch("Auth BOOBOO STANK");
+    googledrive.authorize()
+               .then(token => {
+                googledrive.moveAndRenameFile(token, filename, v1500_filename_initial, scan_folder_id, inbound_folder_id)
+                           .then(res => {
+                            console.warn("File moved...")
+                            console.warn(res)
+                           })
+                           .catch("move/rename BOOBOO STANK");
+               })
+               .catch("Auth BOOBOO STANK");
 
 };
 
