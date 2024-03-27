@@ -18,6 +18,7 @@ async function authorize() {
     process.env.GOOGLE_PRIVATE_KEY,
     SCOPE
   );
+  console.log('GOOGLE_CLIENT_EMAIL: ', process.env.GOOGLE_CLIENT_EMAIL)
   await jwtClient.authorize();
   return jwtClient;
 }

@@ -342,7 +342,7 @@ exports.uploadSmarterNanonets = async (req, res) => {
 
     // TEST CODE
     // ----------
-    console.warn(req.files[0]);
+    // console.warn(req.files[0]);
     // res.sendStatus(200)
     // ----------
     // PSEUDO CODE
@@ -918,7 +918,7 @@ exports.webhookNanonets = async (req, res) => {
         }
     })
 
-    // if any of the above fail, move file to fail folder and return (for now)
+    // TODO if any of the above fail, move file to fail folder and return (for now)
 
     console.warn("Response validated...")
     // console.warn("values:")
@@ -1063,17 +1063,18 @@ exports.webhookNanonets = async (req, res) => {
     
 
     console.log("Moving file to Inbound...")
-    console.warn("...................")
-    console.warn("PSYCH!!!!!!!!!!!! DOne!")
+    // console.warn("...................")
+    // console.warn("PSYCH!!!!!!!!!!!! DOne!")
     // move file to Inbound folder and rename
     googledrive.authorize()
                .then(token => {
-                googledrive.moveAndRenameFile(token, filename, v1500_filename_initial, scan_folder_id, inbound_folder_id)
-                           .then(res => {
-                            console.warn("File moved...")
-                            console.warn(res)
-                           })
-                           .catch("move/rename BOOBOO STANK");
+                console.log(token)
+                // googledrive.moveAndRenameFile(token, filename, v1500_filename_initial, scan_folder_id, inbound_folder_id)
+                //            .then(res => {
+                //             console.warn("File moved...")
+                //             console.warn(res)
+                //            })
+                //            .catch("move/rename BOOBOO STANK");
                })
                .catch("Auth BOOBOO STANK");
 
