@@ -990,7 +990,7 @@ exports.webhookNanonets = async (req, res) => {
                         return a.dos < b.dos ? -1 : 1;
                     });
 
-    const dos_array = temp?.map(r => `${(new Date(r.Date_of_service_from).getMonth() + 1) < 10 ? `0${new Date(r.Date_of_service_from).getMonth() + 1}` : `${new Date(r.Date_of_service_from).getMonth() + 1}`}-${(new Date(r.Date_of_service_from).getDate() + 1) < 10 ? `0${new Date(r.Date_of_service_from).getDate() + 1}` : `${new Date(r.Date_of_service_from).getDate() + 1}`}-${new Date(r.Date_of_service_from).getFullYear()}`);
+    const dos_array = temp?.map(r => `${(new Date(r.Date_of_service_from).getMonth() + 1) < 10 ? `0${new Date(r.Date_of_service_from).getMonth() + 1}` : `${new Date(r.Date_of_service_from).getMonth() + 1}`}-${(new Date(r.Date_of_service_from).getDate()) < 10 ? `0${new Date(r.Date_of_service_from).getDate()}` : `${new Date(r.Date_of_service_from).getDate()}`}-${new Date(r.Date_of_service_from).getFullYear()}`);
     const uniqueDOS = Array.from(new Set(dos_array));
     
     const dos_array2 = temp?.map(r => r.Date_of_service_from);
