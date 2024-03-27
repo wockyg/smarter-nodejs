@@ -992,6 +992,10 @@ exports.webhookNanonets = async (req, res) => {
 
     const dos_array = temp?.map(r => `${(new Date(r.Date_of_service_from).getMonth() + 1) < 10 ? `0${new Date(r.Date_of_service_from).getMonth() + 1}` : `${new Date(r.Date_of_service_from).getMonth() + 1}`}-${(new Date(r.Date_of_service_from).getDate() + 1) < 10 ? `0${new Date(r.Date_of_service_from).getDate() + 1}` : `${new Date(r.Date_of_service_from).getDate() + 1}`}-${new Date(r.Date_of_service_from).getFullYear()}`);
     const uniqueDOS = Array.from(new Set(dos_array));
+    
+    const dos_array2 = temp?.map(r => r.Date_of_service_from);
+    const uniqueDOS2 = Array.from(new Set(dos_array2));
+    
     const uniqueDOSString = `${uniqueDOS[0]}${uniqueDOS.length > 1 ? `, ${uniqueDOS[1]}` : ''}${uniqueDOS.length > 2 ? `, ${uniqueDOS[2]}` : ''}${uniqueDOS.length > 3 ? `, ${uniqueDOS[3]}` : ''}${uniqueDOS.length > 4 ? `, ${uniqueDOS[4]}` : ''}${uniqueDOS.length > 5 ? `, ${uniqueDOS[5]}` : ''}` 
     const v1500_filename_initial = `${matches[0].claimant} DOS ${uniqueDOSString}.pdf`
     // const d1500_filename = `${matches[0].claimant} ADJ DOS ${uniqueDOSString}.pdf` : null
@@ -1079,9 +1083,10 @@ exports.webhookNanonets = async (req, res) => {
     if (selectedClaim) {
         // update v1500 in SMARTer billing table
         const numUpdated = await Promise.all(
-            uniqueDOS.map(d => {
+            uniqueDOS2.map(d => {
                 console.log("d:", d)
-                return Visit.update({v1500: today}, {where: {referralId: selectedClaim.referralId, dos: new Date(d)}})
+                console.log("referralId:", selectedClaim.referralId)
+                return Visit.update({v1500: today}, {where: {referralId: selectedClaim.referralId, dos: d}})
             })
         )
         console.log(`v1500 field updated for ${numUpdated} visits.`)
